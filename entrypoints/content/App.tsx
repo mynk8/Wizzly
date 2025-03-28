@@ -34,28 +34,28 @@ function togglePlayPause(play) {
 
 function VideoControls() {
   return (
-      <div className="flex gap-5 p-3 bg-base-200 rounded-lg shadow-md">
-        <Play className="cursor-pointer" onClick={() => togglePlayPause(true)} />
-        <Pause className="cursor-pointer" onClick={() => togglePlayPause(false)} />
-      </div>
+    <div className="flex gap-5 p-3 bg-base-200 rounded-lg shadow-md">
+      <Play className="cursor-pointer" onClick={() => togglePlayPause(true)} />
+      <Pause className="cursor-pointer" onClick={() => togglePlayPause(false)} />
+    </div>
   );
 }
 
 function TitleBar({ collapsed, onToggleCollapse, onDragStart, setSettings, settings }) {
   return (
-      <div className="flex items-center justify-between px-3 py-2 bg-primary text-white rounded-t-lg cursor-grab" onMouseDown={onDragStart}>
-        <span className="badge badge-accent">Chat</span>
-        <div className="flex items-center gap-3">
-          <TranscriptStatus />
-          <Settings className="w-5 h-5 cursor-pointer" onClick={() => setSettings(!settings)} />
-          {collapsed ? <Expand className="w-5 h-5 cursor-pointer" onClick={onToggleCollapse} /> : <Minimize className="w-5 h-5 cursor-pointer" onClick={onToggleCollapse} />}
-        </div>
+    <div className="flex items-center justify-between px-3 py-2 bg-primary text-white rounded-t-lg cursor-grab" onMouseDown={onDragStart}>
+      <span className="badge badge-accent">Wizzly</span>
+      <div className="flex items-center gap-3">
+        <TranscriptStatus />
+        <Settings className="w-5 h-5 cursor-pointer" onClick={() => setSettings(!settings)} />
+        {collapsed ? <Expand className="w-5 h-5 cursor-pointer" onClick={onToggleCollapse} /> : <Minimize className="w-5 h-5 cursor-pointer" onClick={onToggleCollapse} />}
       </div>
+    </div>
   );
 }
 
 function MainContent({ settings }) {
-  return settings ? <SettingsPage /> : <VideoControls />;
+  return <SettingsPage />;
 }
 
 function App() {
@@ -87,26 +87,26 @@ function App() {
   }, [isDragging, offset]);
 
   return (
-      <div
-          className="fixed bg-base-100 shadow-xl border border-gray-300 rounded-lg p-2"
-          style={{ top: position.y, left: position.x, width: "300px" }}
-      >
-        <TitleBar
-            collapsed={collapsed}
-            onToggleCollapse={() => setCollapsed(!collapsed)}
-            onDragStart={handleMouseDown}
-            setSettings={setSettings}
-            settings={settings}
-        />
-        {!collapsed && (
-            <LiveAPIProvider apiKey={apiKey} url={uri}>
-              <div className="flex flex-col gap-3 p-3">
-                <Speak />
-                <MainContent settings={settings} />
-              </div>
-            </LiveAPIProvider>
-        )}
-      </div>
+    <div
+      className="fixed bg-base-100 shadow-xl border border-gray-300 rounded-lg p-2"
+      style={{ top: position.y, left: position.x, width: "300px" }}
+    >
+      <TitleBar
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed(!collapsed)}
+        onDragStart={handleMouseDown}
+        setSettings={setSettings}
+        settings={settings}
+      />
+      {!collapsed && (
+        <LiveAPIProvider apiKey={apiKey} url={uri}>
+          <div className="flex flex-col gap-3 p-3">
+            <Speak />
+            {/* <MainContent settings={settings} />*/}
+          </div>
+        </LiveAPIProvider>
+      )}
+    </div>
   );
 }
 
