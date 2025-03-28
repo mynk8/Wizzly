@@ -1,2 +1,17 @@
 @import "tailwindcss";
-@plugin "daisyui";
+
+@plugin "daisyui" {
+  themes: dark --default, forest;
+}
+
+.collapsible {
+  max-height: 500px; /* large enough to contain your content */
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.collapsible.collapsed {
+  max-height: 0;
+  opacity: 0;
+}

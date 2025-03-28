@@ -2,8 +2,10 @@ import { storage } from 'wxt/storage';
 import "./style.output.css";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
+import useStore  from "../store/store";
 
-function normalizeTranscript(text: string) {
+function normalizeTranscript(text: string | unknown) {
+    // @ts-ignore
     return text.replace(/\s+/g, ' ').trim();
 }
 
@@ -31,34 +33,40 @@ function sendVideoInfoToStorage() {
     }
 
     storage.getItem("local:YTTranscript")
-        .then((storedTranscript) => {
-            // Normalize both transcripts before comparing.
+        .then((storedTranscript: string | unknown) => {
             const normalizedStored = storedTranscript ? normalizeTranscript(storedTranscript) : '';
             const normalizedNew = normalizeTranscript(transcript);
-            if (normalizedStored === normalizedNew) {
-                console.log("Transcript unchanged. Not saving.");
-                return;
+
+            // ✅ Ensure Zustand state updates correctly
+            const setTranscript = useStore.getState().setTranscript;
+            if (typeof setTranscript === "function") {
+                setTranscript(transcript);
+                console.log("✅ Zustand transcript updated.");
+            } else {
+                console.error("❌ Zustand setTranscript is not a function!");
             }
-            // Save new transcript if different.
+
             storage.setItem("local:YTTranscript", transcript)
                 .then(() => {
-                    console.log("Transcript saved successfully.");
+                    console.log("✅ Transcript saved successfully.");
+                    console.log(transcript)
                 })
                 .catch(error => {
-                    console.error("Storage error during save:", error);
+                    console.error("❌ Storage error during save:", error);
                 });
         })
         .catch(error => {
-            console.error("Error retrieving stored transcript:", error);
+            console.error("❌ Error retrieving stored transcript:", error);
         });
 }
 
 function openTranscriptPanel() {
     const transcriptButton = document.querySelector('#description [aria-label="Show transcript"]');
     if (transcriptButton) {
+        // @ts-ignore
         transcriptButton.click();
     } else {
-        console.error('Transcript button not found');
+        /* empty */
     }
 }
 
@@ -93,6 +101,7 @@ export default defineContentScript({
     container.style.top = "50px";
     container.style.left = "50px";
     container.style.zIndex = "9999";
+    container.style.maxHeight = "50vh";
     container.style.cursor = "grab";
     document.body.prepend(container);
 
@@ -125,6 +134,7 @@ export default defineContentScript({
       position: "inline",
       anchor: container,
       append: "first", onMount: (shadowContainer) => {
+          shadowContainer.style.all = "unset";
         const root = ReactDOM.createRoot(shadowContainer);
         root.render(<App />);
         return { root };

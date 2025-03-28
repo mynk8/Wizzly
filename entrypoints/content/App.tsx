@@ -1,52 +1,61 @@
-import './style.output.css'
+import './style.output.css';
 import { useState, useEffect } from "react";
-import Chat from "./chat.tsx";
-import Geminichat from "./geminichat.tsx";
 import SettingsPage from "./settings.tsx";
+import { Expand, Minimize, Pause, Play, Settings } from 'lucide-react';
+import Speak from "@/entrypoints/content/components/MicrophoneControls.tsx";
+import { LiveAPIProvider } from "@/entrypoints/contexts/LiveAPIContext.tsx";
+
+const host = "generativelanguage.googleapis.com";
+const uri = `wss://${host}/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`;
+const apiKey = "";
 
 function TranscriptStatus() {
   const [status, setStatus] = useState(false);
-  const transcript = "";
+
   useEffect(() => {
-    storage.getItem("local:YTTranscript")
-    .then((transc) => {
-        if (transc.length > 20 ) {
-          setStatus(true);
-          console.log(transc);
-        }
-      })
-  })
-  
-  return (
-    <>
-      {status ? <label>Fetched</label> : <label> Not Fetched </label>}
-    </>
-  )
+    const checkTranscript = async () => {
+      const transc = await storage.getItem("local:YTTranscript");
+      setStatus(transc && transc.length > 20);
+    };
+
+    checkTranscript();
+    const interval = setInterval(checkTranscript, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <span className="badge badge-primary">{status ? "Fetched" : "Not Fetched"}</span>;
 }
 
-function togglePlayPause(play: boolean) {
+function togglePlayPause(play) {
   const video = document.querySelector("video");
-  if (!video) {
-    console.error("Video element not found!");
-    return;
-  }
-
-  if (play) {
-    video.play();
-  } else {
-    video.pause();
-  }
+  if (!video) return console.error("Video element not found!");
+  play ? video.play() : video.pause();
 }
 
-function VideoCard() {
+function VideoControls() {
   return (
-    <div className="shadow-sm w-54">
-      <ul className="menu menu-horizontal bg-base-200 rounded-box w-full justify-center gap-5">
-        <li className="btn-primary btn" onClick={() => togglePlayPause(true)}>Play</li>
-        <li className="btn-primary btn" onClick={() => togglePlayPause(false)}>Pause</li>
-      </ul>
-    </div>
+      <div className="flex gap-5 p-3 bg-base-200 rounded-lg shadow-md">
+        <Play className="cursor-pointer" onClick={() => togglePlayPause(true)} />
+        <Pause className="cursor-pointer" onClick={() => togglePlayPause(false)} />
+      </div>
   );
+}
+
+function TitleBar({ collapsed, onToggleCollapse, onDragStart, setSettings, settings }) {
+  return (
+      <div className="flex items-center justify-between px-3 py-2 bg-primary text-white rounded-t-lg cursor-grab" onMouseDown={onDragStart}>
+        <span className="badge badge-accent">Chat</span>
+        <div className="flex items-center gap-3">
+          <TranscriptStatus />
+          <Settings className="w-5 h-5 cursor-pointer" onClick={() => setSettings(!settings)} />
+          {collapsed ? <Expand className="w-5 h-5 cursor-pointer" onClick={onToggleCollapse} /> : <Minimize className="w-5 h-5 cursor-pointer" onClick={onToggleCollapse} />}
+        </div>
+      </div>
+  );
+}
+
+function MainContent({ settings }) {
+  return settings ? <SettingsPage /> : <VideoControls />;
 }
 
 function App() {
@@ -56,28 +65,18 @@ function App() {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [position, setPosition] = useState({ x: 100, y: 100 });
 
-  // Handle drag start on title bar
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleMouseDown = (e) => {
     setIsDragging(true);
-    setOffset({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
-    });
+    setOffset({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
 
-  // Handle drag move
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = (e) => {
     if (!isDragging) return;
-    setPosition({
-      x: e.clientX - offset.x,
-      y: e.clientY - offset.y,
-    });
+    setPosition({ x: e.clientX - offset.x, y: e.clientY - offset.y });
   };
 
-  // Stop dragging
   const handleMouseUp = () => setIsDragging(false);
 
-  // Attach event listeners
   useEffect(() => {
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
@@ -88,67 +87,27 @@ function App() {
   }, [isDragging, offset]);
 
   return (
-    <div
-      className="fixed bg-base-200 bg-opacity-100 shadow-xl border border-gray-300 rounded-lg"
-      style={{
-        top: `${position.y}px`,
-        left: `${position.x}px`,
-        width: "300px",
-      }}
-    >
-      {/* Title Bar */}
       <div
-        className="flex items-center justify-between bg-blue-800 bg-opacity-100 text-white px-3 py-2 cursor-grab rounded-t-lg"
-        onMouseDown={handleMouseDown}
+          className="fixed bg-base-100 shadow-xl border border-gray-300 rounded-lg p-2"
+          style={{ top: position.y, left: position.x, width: "300px" }}
       >
-        <span>Floating Chat</span>
-        <button
-          className="btn btn-xs btn-secondary"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? "Expand" : "Collapse"}
-        </button>
-        <TranscriptStatus />
+        <TitleBar
+            collapsed={collapsed}
+            onToggleCollapse={() => setCollapsed(!collapsed)}
+            onDragStart={handleMouseDown}
+            setSettings={setSettings}
+            settings={settings}
+        />
+        {!collapsed && (
+            <LiveAPIProvider apiKey={apiKey} url={uri}>
+              <div className="flex flex-col gap-3 p-3">
+                <Speak />
+                <MainContent settings={settings} />
+              </div>
+            </LiveAPIProvider>
+        )}
       </div>
-
-      {/* Collapsible Content */}
-      {!collapsed && (
-        <div className="flex flex-col gap-5 p-5">
-          {/* Navigation Buttons */}
-          <ul className="menu gap-5 menu-horizontal bg-base-200 rounded-box">
-            <li>
-              <button
-                className="btn btn-neutral"
-                onClick={() => setSettings(false)}
-              >
-                Home
-              </button>
-            </li>
-            <li>
-              <button
-                className="btn btn-neutral"
-                onClick={() => setSettings(true)}
-              >
-                Settings
-              </button>
-            </li>
-          </ul>
-
-          {/* Conditional Rendering */}
-          {settings ? (
-            <SettingsPage />
-          ) : (
-            <div className="bg-base-200">
-              <VideoCard />
-              <Chat />
-              <Geminichat />
-            </div>
-          )}
-        </div>
-      )}
-    </div>
   );
 }
 
 export default App;
-

@@ -7,6 +7,6 @@ export default defineConfig({
     startUrls: ["https://google.com"],
   },
   manifest: {
-    permissions: ['storage']
+    permissions: ['storage', 'audio', 'desktopCapture', 'webRequest'],
   }
 });

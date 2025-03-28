@@ -1,27 +1,30 @@
-const SettingsPage = () => {
-    return (
-        <div className="flex flex-col gap-5 items-center justify-center">
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text">
-                        Theme
-                    </span>
-                </label>
-                <div className="select select-bordered w-full max-w-xs">
-                    <select>
-                        <option>Light</option>
-                        <option>Dark</option>
-                        <option>System</option>
-                    </select>
-                </div>
-                <div className={"flex flex-col"}>
-                    <label className={"label"}>API Key</label>
-                    <input className={"input"} type="text" placeholder="Enter your API key" />
-                    <button className="btn btn-primary btn-sm">Save</button>
-                </div>
-            </div>
-        </div>
-    )
-}
+import React, { useState } from 'react';
+import useStore from '../store/store';
 
-export default SettingsPage;
+const Settings = () => {
+    const { apiKey, setApiKey } = useStore();
+    const [input, setInput] = useState(apiKey);
+
+    const handleSave = () => {
+        console.log("Saving API key...", input.trim());
+        setApiKey(input.trim());
+    };
+
+    return (
+        <div className="p-4">
+            <h2>Settings</h2>
+            <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Enter your API key..."
+                className="input input-bordered w-full"
+            />
+            <button onClick={handleSave} className="btn btn-primary mt-2">
+                Save API Key
+            </button>
+        </div>
+    );
+};
+
+export default Settings;
