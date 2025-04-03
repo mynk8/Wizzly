@@ -87,27 +87,33 @@ function App() {
   }, [isDragging, offset]);
 
   return (
-    <div
-      className="fixed bg-base-100 shadow-xl border border-gray-300 rounded-lg p-2"
-      style={{ top: position.y, left: position.x, width: "300px" }}
-    >
-      <TitleBar
-        collapsed={collapsed}
-        onToggleCollapse={() => setCollapsed(!collapsed)}
-        onDragStart={handleMouseDown}
-        setSettings={setSettings}
-        settings={settings}
-      />
-      {!collapsed && (
-        <LiveAPIProvider apiKey={apiKey} url={uri}>
-          <div className="flex flex-col gap-3 p-3">
-            <Speak />
-            {/* <MainContent settings={settings} />*/}
-          </div>
-        </LiveAPIProvider>
-      )}
-    </div>
+      <div
+          className="fixed bg-base-100 shadow-xl border border-gray-300 rounded-lg p-2 flex flex-col"
+          style={{
+            top: position.y,
+            left: position.x,
+            width: "300px",
+            maxHeight: "50vh", // ✅ STRICT HEIGHT LIMIT
+            overflow: "hidden", // ✅ PREVENTS OVERFLOW
+          }}
+      >
+        <TitleBar
+            collapsed={collapsed}
+            onToggleCollapse={() => setCollapsed(!collapsed)}
+            onDragStart={handleMouseDown}
+            setSettings={setSettings}
+            settings={settings}
+        />
+        {!collapsed && (
+            <LiveAPIProvider apiKey={apiKey} url={uri}>
+              <div className="flex flex-col flex-1 gap-3 p-3 overflow-auto">
+                <Speak />
+              </div>
+            </LiveAPIProvider>
+        )}
+      </div>
   );
+
 }
 
 export default App;

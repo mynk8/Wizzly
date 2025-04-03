@@ -101,8 +101,9 @@ export default defineContentScript({
     container.style.top = "50px";
     container.style.left = "50px";
     container.style.zIndex = "9999";
-    container.style.maxHeight = "50vh";
+    container.style.maxHeight = "10vh";
     container.style.cursor = "grab";
+    container.style.overflow = "hidden";
     document.body.prepend(container);
 
     let isDragging = false;
