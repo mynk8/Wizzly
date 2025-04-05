@@ -7,7 +7,7 @@ import { LiveAPIProvider } from "@/entrypoints/contexts/LiveAPIContext.tsx";
 
 const host = "generativelanguage.googleapis.com";
 const uri = `wss://${host}/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`;
-const apiKey = "AIzaSyBrAHPX1rmeqnoyY7KWGJ4i_-x4Tn4deFk";
+const apiKey = "";
 
 function TranscriptStatus() {
   const [status, setStatus] = useState(false);
