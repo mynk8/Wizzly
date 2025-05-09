@@ -32,11 +32,21 @@ cd wizzly
 pnpm install
 ```
 
-3. Configure your environment:
+3. Configure your API key (Choose one method):
+
+   **Method 1 - Environment Variable:**
    - Create a `.env` file in the root directory
    - Add your Gemini API key:
      ```
      GEMINI_API_KEY=your_api_key_here
+     ```
+
+   **Method 2 - Direct Configuration:**
+   - Open `entrypoints/content/App.tsx`
+   - Locate the `apiKey` constant (around line 10)
+   - Replace the empty string with your API key:
+     ```typescript
+     const apiKey = "your_api_key_here";
      ```
 
 4. Build the extension:
