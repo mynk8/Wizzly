@@ -2,10 +2,19 @@ import type {
   Content,
   FunctionCall,
   GenerationConfig,
-  GenerativeContentBlob,
+  Blob as GenerativeContentBlob,
   Part,
   Tool,
-} from "@google/generative-ai";
+} from "@google/genai";
+
+interface TextPart {
+  text: string;
+  inlineData?: never;
+  functionCall?: never;
+  fileData?: never;
+  executableCode?: never;
+  codeExecutionResult?: never;
+}
 
 /**
  * this module contains type-definitions and Type-Guards

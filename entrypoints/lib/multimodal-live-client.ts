@@ -1,4 +1,4 @@
-import { Content, GenerativeContentBlob, Part } from "@google/generative-ai";
+import { Content, Blob as GenerativeContentBlob, Part } from "@google/genai";
 import { EventEmitter } from "eventemitter3";
 import { difference } from "lodash";
 import {
@@ -26,6 +26,8 @@ import { blobToJSON, base64ToArrayBuffer } from "./utils";
 /**
  * the events that this client will emit
  */
+
+
 interface MultimodalLiveClientEventTypes {
   open: () => void;
   log: (log: StreamingLog) => void;
@@ -191,7 +193,7 @@ export class MultimodalLiveClient extends EventEmitter<MultimodalLiveClientEvent
 
         // when its audio that is returned for modelTurn
         const audioParts = parts.filter(
-          (p) => p.inlineData && p.inlineData.mimeType.startsWith("audio/pcm"),
+          (p) => p.inlineData && p.inlineData.mimeType?.startsWith("audio/pcm"),
         );
         const base64s = audioParts.map((p) => p.inlineData?.data);
 
@@ -229,10 +231,10 @@ export class MultimodalLiveClient extends EventEmitter<MultimodalLiveClientEvent
     let hasVideo = false;
     for (let i = 0; i < chunks.length; i++) {
       const ch = chunks[i];
-      if (ch.mimeType.includes("audio")) {
+      if (ch.mimeType?.includes("audio")) {
         hasAudio = true;
       }
-      if (ch.mimeType.includes("image")) {
+      if (ch.mimeType?.includes("image")) {
         hasVideo = true;
       }
       if (hasAudio && hasVideo) {

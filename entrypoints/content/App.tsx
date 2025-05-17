@@ -1,5 +1,5 @@
 import './style.output.css';
-import { useState, useEffect } from "react";
+import {useState, useEffect, MouseEventHandler} from "react";
 import SettingsPage from "./settings.tsx";
 import { Expand, Minimize, Pause, Play, Settings } from 'lucide-react';
 import Speak from "@/entrypoints/content/components/MicrophoneControls.tsx";
@@ -7,15 +7,15 @@ import { LiveAPIProvider } from "@/entrypoints/contexts/LiveAPIContext.tsx";
 
 const host = "generativelanguage.googleapis.com";
 const uri = `wss://${host}/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`;
-const apiKey = "";
+const apiKey = "AIzaSyCBwKu6gQpDrjMOWl-4xVLYd8_TFdSQIsM";
 
 function TranscriptStatus() {
   const [status, setStatus] = useState(false);
 
   useEffect(() => {
     const checkTranscript = async () => {
-      const transc = await storage.getItem("local:YTTranscript");
-      setStatus(transc && transc.length > 20);
+      const transc = await storage.getItem("local:YTTranscript") as string;
+      setStatus((transc && transc.length > 20) as boolean);
     };
 
     checkTranscript();
@@ -26,7 +26,7 @@ function TranscriptStatus() {
   return <span className="badge badge-primary">{status ? "Fetched" : "Not Fetched"}</span>;
 }
 
-function togglePlayPause(play) {
+function togglePlayPause(play: boolean) {
   const video = document.querySelector("video");
   if (!video) return console.error("Video element not found!");
   play ? video.play() : video.pause();
@@ -41,7 +41,15 @@ function VideoControls() {
   );
 }
 
-function TitleBar({ collapsed, onToggleCollapse, onDragStart, setSettings, settings }) {
+interface TitleBar {
+    collapsed: boolean;
+    onToggleCollapse: () => void;
+    onDragStart: (e: any) => void;
+    setSettings: (settings: boolean) => void;
+    settings: boolean;
+}
+
+function TitleBar({ collapsed, onToggleCollapse, onDragStart, setSettings, settings } : TitleBar) {
   return (
     <div className="flex items-center justify-between px-3 py-2 bg-primary text-white rounded-t-lg cursor-grab" onMouseDown={onDragStart}>
       <span className="badge badge-accent">Wizzly</span>
@@ -54,10 +62,6 @@ function TitleBar({ collapsed, onToggleCollapse, onDragStart, setSettings, setti
   );
 }
 
-function MainContent({ settings }) {
-  return <SettingsPage />;
-}
-
 function App() {
   const [settings, setSettings] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -65,12 +69,12 @@ function App() {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [position, setPosition] = useState({ x: 100, y: 100 });
 
-  const handleMouseDown = (e) => {
+  const handleMouseDown = (e: MouseEvent) => {
     setIsDragging(true);
     setOffset({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging) return;
     setPosition({ x: e.clientX - offset.x, y: e.clientY - offset.y });
   };

@@ -14,7 +14,7 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.0",
+    "@google/genai": "^0.14.1",
     "@tailwindcss/vite": "^4.0.17",
     "classnames": "^2.5.1",
     "eventemitter3": "^5.0.1",

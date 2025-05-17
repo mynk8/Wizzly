@@ -55,7 +55,7 @@ const Speak = () => {
       </div>
       <div className="flex flex-row flex-1 justify-center gap-5 mt-4">
         <button
-          ref={connectButtonRef}
+          ref={connectButtonRef as any}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           onClick={connected ? disconnect : connect}
         >
