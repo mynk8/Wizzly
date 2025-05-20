@@ -9,10 +9,6 @@ import { audioContext } from "../lib/utils";
 import VolMeterWorket from "../lib/worklets/vol-meter";
 import useStore from "@/entrypoints/store/store.ts";
 
-function normalizeTranscript(text: string | unknown) {
-  // @ts-ignore
-  return text.replace(/\s+/g, ' ').trim();
-}
 
 export type UseLiveAPIResults = {
   client: MultimodalLiveClient;
@@ -38,8 +34,10 @@ export function useLiveAPI({
   const [connected, setConnected] = useState(false);
   const [config, setConfig] = useState<LiveConfig>({
     model: "models/gemini-2.0-flash-exp",
-    systemInstruction: { parts:
-          [{ text: `
+    systemInstruction: {
+      parts:
+        [{
+          text: `
           You are Wizzly, an AI assistant for YouTube tutorial videos. Your task is to help users understand and navigate the video transcript by:
 
 Answering questions based on the transcript.
@@ -136,7 +134,7 @@ ${transcript}
     }
     client.disconnect();
     await client.connect(config);
-    console.log("Transcript set in config",transcript);
+    console.log("Transcript set in config", transcript);
     setConnected(true);
   }, [client, setConnected, config]);
 

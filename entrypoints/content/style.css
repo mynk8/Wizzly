@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-@plugin "daisyui" {
-  themes: dark --default, forest;
-}
-
 .collapsible {
   max-height: 500px; /* large enough to contain your content */
   opacity: 1;

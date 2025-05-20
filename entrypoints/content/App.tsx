@@ -1,7 +1,6 @@
 import './style.output.css';
-import {useState, useEffect, MouseEventHandler} from "react";
-import SettingsPage from "./settings.tsx";
-import { Expand, Minimize, Pause, Play, Settings } from 'lucide-react';
+import {useState, useEffect} from "react";
+import { Expand, Minimize, Settings } from 'lucide-react';
 import Speak from "@/entrypoints/content/components/MicrophoneControls.tsx";
 import { LiveAPIProvider } from "@/entrypoints/contexts/LiveAPIContext.tsx";
 
@@ -23,22 +22,7 @@ function TranscriptStatus() {
     return () => clearInterval(interval);
   }, []);
 
-  return <span className="badge badge-primary">{status ? "Fetched" : "Not Fetched"}</span>;
-}
-
-function togglePlayPause(play: boolean) {
-  const video = document.querySelector("video");
-  if (!video) return console.error("Video element not found!");
-  play ? video.play() : video.pause();
-}
-
-function VideoControls() {
-  return (
-    <div className="flex gap-5 p-3 bg-base-200 rounded-lg shadow-md">
-      <Play className="cursor-pointer" onClick={() => togglePlayPause(true)} />
-      <Pause className="cursor-pointer" onClick={() => togglePlayPause(false)} />
-    </div>
-  );
+  return <span className="text-xl text-green-500">{status ? "Fetched" : "Not Fetched"}</span>;
 }
 
 interface TitleBar {
@@ -51,10 +35,10 @@ interface TitleBar {
 
 function TitleBar({ collapsed, onToggleCollapse, onDragStart, setSettings, settings } : TitleBar) {
   return (
-    <div className="flex items-center justify-between px-3 py-2 bg-primary text-white rounded-t-lg cursor-grab" onMouseDown={onDragStart}>
-      <span className="badge badge-accent">Wizzly</span>
-      <div className="flex items-center gap-3">
-        <TranscriptStatus />
+    <div className="flex justify-end justify-between content-end px-3 py-2 bg-gray-950 text-white rounded-t-lg cursor-grab" onMouseDown={onDragStart}>
+      {/* <span className="text-xl">Wizzly</span> */}
+      <div className="flex  gap-3">
+        {/* <TranscriptStatus /> */}
         <Settings className="w-5 h-5 cursor-pointer" onClick={() => setSettings(!settings)} />
         {collapsed ? <Expand className="w-5 h-5 cursor-pointer" onClick={onToggleCollapse} /> : <Minimize className="w-5 h-5 cursor-pointer" onClick={onToggleCollapse} />}
       </div>
@@ -92,15 +76,16 @@ function App() {
 
   return (
       <div
-          className="fixed bg-base-100 shadow-xl border border-gray-300 rounded-lg p-2 flex flex-col"
+          className="fixed shadow-xl p-2 flex flex-col"
           style={{
+            backgroundColor: "#000",
             top: position.y,
             left: position.x,
             width: "300px",
-            maxHeight: "50vh", // ✅ STRICT HEIGHT LIMIT
-            overflow: "hidden", // ✅ PREVENTS OVERFLOW
+            maxHeight: "50vh",
+            overflow: "hidden",
           }}
-      >
+     >
         <TitleBar
             collapsed={collapsed}
             onToggleCollapse={() => setCollapsed(!collapsed)}
@@ -110,14 +95,13 @@ function App() {
         />
         {!collapsed && (
             <LiveAPIProvider apiKey={apiKey} url={uri}>
-              <div className="flex flex-col flex-1 gap-3 p-3 overflow-auto">
+              <div className="flex flex-col flex-1 gap-3 p-3 overflow-auto overflow-y-hidden">
                 <Speak />
               </div>
             </LiveAPIProvider>
         )}
       </div>
   );
-
 }
 
 export default App;

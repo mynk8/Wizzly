@@ -4,10 +4,6 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import useStore  from "../store/store";
 
-function normalizeTranscript(text: string | unknown) {
-    // @ts-ignore
-    return text.replace(/\s+/g, ' ').trim();
-}
 
 function extractTranscript() {
     const transcriptSegments = document.querySelectorAll('ytd-transcript-segment-renderer');
@@ -33,26 +29,14 @@ function sendVideoInfoToStorage() {
     }
 
     storage.getItem("local:YTTranscript")
-        .then((storedTranscript: string | unknown) => {
-            const normalizedStored = storedTranscript ? normalizeTranscript(storedTranscript) : '';
-            const normalizedNew = normalizeTranscript(transcript);
-
-            // ✅ Ensure Zustand state updates correctly
+        .then((_) => {
             const setTranscript = useStore.getState().setTranscript;
             if (typeof setTranscript === "function") {
                 setTranscript(transcript);
-                console.log("✅ Zustand transcript updated.");
-            } else {
-                console.error("❌ Zustand setTranscript is not a function!");
             }
-
             storage.setItem("local:YTTranscript", transcript)
-                .then(() => {
-                    console.log("✅ Transcript saved successfully.");
-                    console.log(transcript)
-                })
                 .catch(error => {
-                    console.error("❌ Storage error during save:", error);
+                    console.error("❌ Storage error during saving the transcript:", error);
                 });
         })
         .catch(error => {
@@ -65,13 +49,10 @@ function openTranscriptPanel() {
     if (transcriptButton) {
         // @ts-ignore
         transcriptButton.click();
-    } else {
-        /* empty */
     }
 }
 
 function pollTranscriptPanel() {
-    // If the transcript panel isn't open, try to open it.
     if (!document.querySelector('ytd-transcript-renderer')) {
         console.log("Transcript panel not open. Attempting to open...");
         openTranscriptPanel();
@@ -79,12 +60,10 @@ function pollTranscriptPanel() {
 }
 
 function startObserving() {
-    // Poll every 2 seconds to ensure the transcript panel is open.
     setInterval(() => {
         pollTranscriptPanel();
     }, 2000);
 
-    // Poll every 2 seconds to update the transcript in storage (only if changed).
     setInterval(() => {
         sendVideoInfoToStorage();
     }, 2000);
@@ -130,7 +109,7 @@ export default defineContentScript({
 
     // Wrap the app container in a Shadow DOM
     const ui = await createShadowRootUi(ctx, {
-      name: "wxt-react-example",
+      name: "wiz-agent",
       // Use the draggable container as the anchor for the Shadow DOM.
       position: "inline",
       anchor: container,
