@@ -1,0 +1,43 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Coding Conventions and Patterns
+
+## Component Structure
+
+Components should follow these patterns as demonstrated in [NotesLibrary.tsx](mdc:entrypoints/content/components/NotesLibrary.tsx):
+
+1. Import order:
+   - React and hooks
+   - Third-party libraries and icons
+   - Local stores and types
+   - Other local imports
+
+2. Component organization:
+   - State declarations
+   - Helper functions
+   - Early returns for empty/error states
+   - Main render logic
+
+## Theme Implementation
+
+Theme-related styling should:
+- Use the global theme store
+- Implement transitions with `transition-colors duration-300`
+- Provide both dark and light mode colors
+- Use consistent color variables
+
+## TypeScript Usage
+
+- Use TypeScript types for component props and store state
+- Import types separately when possible
+- Define interfaces/types close to where they're used
+
+## State Management
+
+- Use custom stores for global state
+- Keep component state local when possible
+- Use appropriate React hooks for state management
+- Implement proper state updates with immutable patterns

@@ -38,6 +38,9 @@ function TitleBar({
   onToggleTheme,
   onTakeNote
 }: TitleBarProps) {
+  const settingsButton = async () => {
+    browser.runtime.sendMessage({ action: "openSettings" });
+  }
   return (
     <div
       className={`flex justify-between items-center px-4 py-3 border-b cursor-grab transition-colors duration-300 ${
@@ -48,7 +51,7 @@ function TitleBar({
       onMouseDown={onDragStart}
     >
       <div className="flex gap-3 items-center">
-        <div className={`flex rounded overflow-hidden border transition-colors duration-300 ${
+        <div className={`flex rounded overflow-hidden border border-2 transition-colors duration-300 ${
           theme === 'dark' ? 'border-[#252525]' : 'border-[#D0D0D0]'
         }`}>
           <button 
@@ -113,7 +116,7 @@ function TitleBar({
           <span className="text-sm font-medium">Take Note</span>
         </button>
       </div>
-      <div className="flex gap-4">
+      <div className="flex gap-4 dark:bg-[#1A1A1A] p-2 rounded-md">
         <button
           onClick={onToggleTheme}
           className="transition-colors duration-300"
@@ -130,7 +133,7 @@ function TitleBar({
               ? 'text-[#8E8E8E] hover:text-[#FFFFFF]' 
               : 'text-[#666666] hover:text-[#000000]'
           }`} 
-          onClick={() => setSettings(!settings)} 
+          onClick={settingsButton} 
         />
         {collapsed
           ? <Expand 

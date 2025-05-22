@@ -3,3 +3,19 @@ description:
 globs:
 alwaysApply: false
 ---
+# Wizzly Project Overview
+
+This is a browser extension built with React, TypeScript, and WXT that provides AI-powered assistance for YouTube videos. The extension uses Google's Gemini AI for processing video transcripts and answering user questions.
+
+## Key Entry Points
+- Main application: [entrypoints/content/App.tsx](mdc:entrypoints/content/App.tsx)
+- Extension configuration: [wxt.config.ts](mdc:wxt.config.ts)
+- Project configuration: [package.json](mdc:package.json)
+
+## Core Technologies
+- React 18.3.1 for UI components
+- TypeScript 5.8.2 for type safety
+- Tailwind CSS with DaisyUI for styling
+- WXT for browser extension development
+- Zustand for state management
+- Google Generative AI for content processing

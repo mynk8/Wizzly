@@ -3,3 +3,33 @@ description:
 globs:
 alwaysApply: false
 ---
+# Extension Features Guide
+
+## Core Features
+
+### Transcript Processing
+- Real-time transcript extraction from YouTube videos
+- Multi-language support
+- Status indicators for transcript availability
+
+### Voice Interaction
+- Built-in microphone controls with audio visualization
+- Voice-to-text conversion
+- AI-powered response generation using Gemini API
+
+### User Interface
+- Draggable floating window interface
+- Collapsible components
+- Video playback controls
+- Settings management
+
+## Implementation Details
+- Uses React components for modular UI
+- Zustand for state management
+- Tailwind CSS with DaisyUI for styling
+- Google Generative AI for content processing
+
+## Feature Locations
+- Main UI: [entrypoints/content/App.tsx](mdc:entrypoints/content/App.tsx)
+- Settings: [entrypoints/content/settings.tsx](mdc:entrypoints/content/settings.tsx)
+- Styles: [entrypoints/content/style.css](mdc:entrypoints/content/style.css)

@@ -3,3 +3,26 @@ description:
 globs:
 alwaysApply: false
 ---
+# Development Workflow Guide
+
+## Environment Setup
+- Requires Node.js 18.0.0+ and pnpm 8.0.0+
+- Gemini API key must be configured in `.env` or directly in the code
+
+## Development Commands
+- `pnpm dev`: Start development mode for Chrome
+- `pnpm dev:firefox`: Start development mode for Firefox
+- `pnpm build`: Build for production (Chrome)
+- `pnpm build:firefox`: Build for production (Firefox)
+- `pnpm zip`: Create distribution package for Chrome
+- `pnpm zip:firefox`: Create distribution package for Firefox
+
+## Important Files
+- [package.json](mdc:package.json): Project dependencies and scripts
+- [README.md](mdc:README.md): Project documentation and setup instructions
+
+## Best Practices
+- Always run tests before committing
+- Follow TypeScript strict mode guidelines
+- Use the provided development commands for consistent builds
+- Keep dependencies up to date using `pnpm update`
