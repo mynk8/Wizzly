@@ -3,3 +3,47 @@ description:
 globs:
 alwaysApply: false
 ---
+# Project Structure Guide
+
+## Directory Structure
+
+The project follows a modular structure with the following key directories:
+
+- `entrypoints/`: Main application code
+  - `content/`: Components and features for the browser extension's content scripts
+  - `settings/`: Full webpage for viewing notes and configuring extension settings
+    - Manages extension configuration through localStorage
+    - Provides a full-page interface for note management
+  - `store/`: State management using custom stores
+  - `lib/`: Utility functions and shared code
+  - `hooks/`: Custom React hooks
+  - `contexts/`: React context providers
+  - `assets/`: Static assets and resources
+
+## Extension Architecture
+
+### Settings Page
+- Hosted as a full webpage
+- Writes configuration to localStorage
+- Extension reads configuration from localStorage
+- Provides expanded interface for note management
+
+### Content Scripts
+The [NotesLibrary.tsx](mdc:entrypoints/content/components/NotesLibrary.tsx) component is a core feature that:
+- Displays user's saved notes organized by topics
+- Supports expanding/collapsing topics
+- Provides functionality to copy notes, open source videos, and delete notes
+- Implements dark/light theme support
+
+## State Management
+
+The application uses custom stores for state management:
+- Notes store (`notesStore`) handles note-related operations
+- Global store (`store`) manages application-wide settings like theme
+
+## Styling
+
+The project uses:
+- Tailwind CSS for styling
+- Theme-based styling with dark/light mode support
+- Transition effects for smooth theme changes

@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import { IGenAI, useGenAI } from "../hooks/use-chat-api";
 import { ReactNode } from "react";
 

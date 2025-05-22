@@ -3,3 +3,38 @@ description:
 globs:
 alwaysApply: false
 ---
+# Extension Configuration Management
+
+## Settings Page Architecture
+
+The settings page serves as the configuration hub for the extension:
+- Implemented as a full webpage for better user experience
+- Provides comprehensive note management interface
+- Handles extension configuration persistence
+
+## Configuration Flow
+
+1. Settings Storage:
+   - All configuration changes are written to localStorage
+   - Use consistent key names for settings
+   - Include version information for potential future migrations
+
+2. Extension Access:
+   - Extension content scripts read configuration from localStorage
+   - Implement proper fallbacks for missing configuration
+   - Handle configuration updates without requiring extension reload
+
+## Best Practices
+
+- Always use typed configuration objects
+- Include default values for all settings
+- Implement validation for configuration values
+- Use events to notify content scripts of configuration changes
+- Keep configuration schema documented and versioned
+
+## Security Considerations
+
+- Sanitize all configuration values before use
+- Don't store sensitive information in localStorage
+- Validate configuration data when reading from localStorage
+- Handle missing or corrupted configuration gracefully

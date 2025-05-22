@@ -4,6 +4,8 @@ import useStore from "@/entrypoints/store/store.ts";
 import { BookOpen, X } from "lucide-react";
 import NoteSelector from "./NoteSelector";
 import { Note } from "../store/notesStore";
+import { youTubeControlDeclarations } from "@/entrypoints/lib/functionDeclarations";
+import { playYouTubeVideo, pauseYouTubeVideo, getYouTubeVideoStatus, jumpToTimeInVideo } from "@/entrypoints/lib/youtubeControls";
 
 const BotMessage = ({ message, role, theme }: { message: string; role: string; theme: 'dark' | 'light' }) => {
   const isDark = theme === 'dark';
@@ -95,16 +97,17 @@ const Chat = () => {
   }, [transcript, selectedNotes]);
 
   useEffect(() => {
-    if (!chatRef.current || selectedNotes.length > 0) {
-      // Recreate chat with updated context when notes change
-      chatRef.current = ai.chats.create({
-        model: "gemini-2.0-flash",
-        history: memoizedHistory,
-        config: {
-          systemInstruction: `You are a helpful qna assistant you have to answer the questions related to the youtube video of which the transcipt you are given here, ${contextWithNotes}`
-        }
-      });
-    }
+    // Always recreate chat when context changes (transcript or notes)
+    chatRef.current = ai.chats.create({
+      model: "gemini-2.0-flash",
+      history: memoizedHistory,
+      config: {
+        systemInstruction: `You are a helpful qna assistant you have to answer the questions related to the youtube video of which the transcript you are given here, ${contextWithNotes}. You also have access to YouTube video controls to play, pause, check status, and jump to specific times in the current video.`,
+        tools: [{
+          functionDeclarations: youTubeControlDeclarations
+        }]
+      }
+    });
   }, [ai, contextWithNotes, memoizedHistory]);
 
   const scrollToBottom = useCallback(() => {
@@ -127,6 +130,26 @@ const Chat = () => {
     setSelectedNotes(prev => prev.filter(note => note.id !== noteId));
   };
 
+  // Function to execute YouTube control functions
+  const executeYouTubeFunction = (functionName: string, args: any) => {
+    switch (functionName) {
+      case 'play_youtube_video':
+        return playYouTubeVideo();
+      case 'pause_youtube_video':
+        return pauseYouTubeVideo();
+      case 'get_youtube_video_status':
+        return getYouTubeVideoStatus();
+      case 'jump_to_time':
+        return jumpToTimeInVideo(args.timeInSeconds);
+      default:
+        return {
+          success: false,
+          action: 'unknown',
+          message: `Unknown function: ${functionName}`
+        };
+    }
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || !chatRef.current || isLoading) return;
 
@@ -136,22 +159,42 @@ const Chat = () => {
     setIsLoading(true);
 
     try {
-      const stream = await chatRef.current.sendMessageStream({
+      const response = await chatRef.current.sendMessage({
         message: userMessage.text,
       });
 
-      let fullResponse = "";
-      // Add initial empty message
-      addMessage({ role: "model", text: "" });
+      // Check if the response contains function calls
+      if (response.functionCalls && response.functionCalls.length > 0) {
+        console.log("Function calls detected:", response.functionCalls);
+        
+        // Execute function calls and create response
+        let functionResponseText = "";
+        
+        for (const functionCall of response.functionCalls) {
+          console.log("Executing function:", functionCall.name);
+          const result = executeYouTubeFunction(functionCall.name, functionCall.args);
+          console.log("Function result:", result);
+          
+          // Create a user-friendly response based on the function result
+          if (result.success) {
+            functionResponseText += `✅ ${result.message}\n`;
+          } else {
+            functionResponseText += `❌ ${result.message}\n`;
+          }
+        }
 
-      for await (const chunk of stream) {
-        fullResponse += chunk.text;
-        // Update the last message instead of adding a new one
-        updateLastMessage(fullResponse);
+        // Add the function execution result as a bot message
+        addMessage({ 
+          role: "model", 
+          text: functionResponseText.trim() || "Function executed."
+        });
+      } else {
+        // Regular text response
+        addMessage({ role: "model", text: response.text || "No response received." });
       }
     } catch (error) {
       console.error("Error:", error);
-      updateLastMessage("Sorry, something went wrong.");
+      addMessage({ role: "model", text: "Sorry, something went wrong." });
     } finally {
       setIsLoading(false);
       scrollToBottom();
@@ -225,8 +268,8 @@ const Chat = () => {
       <main className="flex-1 overflow-y-auto px-4 py-3 space-y-2 hide-scrollbar">
         {messages.map((msg, index) => (
           <BotMessage 
-            key={`${index}-${msg.role}-${msg.text.substring(0, 10)}`} 
-            message={msg.text} 
+            key={`${index}-${msg.role}-${msg.text?.substring(0, 10) || 'empty'}`} 
+            message={msg.text || ''} 
             role={msg.role}
             theme={theme} 
           />

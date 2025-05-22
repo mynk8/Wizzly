@@ -8,7 +8,7 @@ export default defineConfig({
     startUrls: ["https://google.com"],
   },
   manifest: {
-    permissions: ['storage', 'audio', 'desktopCapture', 'webRequest'],
+    permissions: ['storage', 'audio', 'desktopCapture', 'webRequest', 'tabs'],
     web_accessible_resources: [
       {
         resources: ["content/voice.png"],
