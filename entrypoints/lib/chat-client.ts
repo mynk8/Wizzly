@@ -1,7 +1,7 @@
-import { GoogleGenAI } from "@google/genai"
+import { GoogleGenAI, Type } from "@google/genai"
 
 
-export const useChat = ({ apiKey }:{ apiKey: string }) => {
+export const useChat = async ({ apiKey }:{ apiKey: string }) => {
   const ai = new GoogleGenAI({ apiKey: apiKey })
   const chat = ai.chats.create({
     model: 'gemini-2.0-flash',
@@ -14,7 +14,20 @@ export const useChat = ({ apiKey }:{ apiKey: string }) => {
         role: "model",
         parts: [{ text: "Great to meet you. What would you like to know?" }]
       }
-    ]
+    ],
+    config: {
+      tools: [
+        {
+          functionDeclarations: [{
+            name: "youtube",
+            description: "Control YouTube",
+            parameters: {
+              type: Type.OBJECT,
+            },
+          }],
+        },
+      ],
+    },
   })
 
   const stream1 = await chat.sendMessage({

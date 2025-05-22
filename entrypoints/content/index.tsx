@@ -83,6 +83,18 @@ export default defineContentScript({
     container.style.maxHeight = "10vh";
     container.style.cursor = "grab";
     container.style.overflow = "hidden";
+    container.style.fontSize = "29px";
+    
+    // container.style.cssText = `
+    // :host {
+    //     all: initial;
+    // }
+
+    // * {
+    //     font-family: 'Inter', sans-serif;
+    //     font-size: 14px;
+    // }
+    // `;
     document.body.prepend(container);
 
     let isDragging = false;
