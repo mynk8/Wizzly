@@ -48,7 +48,7 @@ const NotesLibrary = () => {
     <div className={`transition-colors duration-300 ${
       theme === 'dark' ? 'bg-[#0A0A0A]' : 'bg-[#FFFFFF]'
     }`}>
-      <h2 className={`px-6 py-4 text-lg font-medium border-b transition-colors duration-300 ${
+      <h2 className={`px-6 py-4 font-medium border-b transition-colors duration-300 items-center align-center ${
         theme === 'dark' 
           ? 'border-[#252525] text-[#FFFFFF]' 
           : 'border-[#E0E0E0] text-[#000000]'
@@ -65,7 +65,7 @@ const NotesLibrary = () => {
             }`}
           >
             <div 
-              className={`flex justify-between items-center px-6 py-3 cursor-pointer transition-colors duration-300 ${
+              className={`flex justify-between bg-gray-900 items-center text-sm px-6 py-3 cursor-pointer transition-colors duration-300 ${
                 theme === 'dark'
                   ? 'hover:bg-[#151515]'
                   : 'hover:bg-[#F5F5F5]'
@@ -73,7 +73,7 @@ const NotesLibrary = () => {
               onClick={() => toggleTopic(topic)}
             >
               <h3 className={`font-medium transition-colors duration-300 ${
-                theme === 'dark' ? 'text-[#FFFFFF]' : 'text-[#000000]'
+                theme === 'dark' ? 'text-[#FFFFFF]' : 'text-gray-600'
               }`}>
                 {topic} <span className="text-sm font-normal">({notesByTopic[topic].length})</span>
               </h3>
@@ -100,7 +100,7 @@ const NotesLibrary = () => {
                       }`}
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className={`font-medium transition-colors duration-300 ${
+                        <h4 className={`font-medium transition-colors duration-300 text-sm text-gray-300 ${
                           theme === 'dark' ? 'text-[#FFFFFF]' : 'text-[#000000]'
                         }`}>
                           {note.videoTitle}
@@ -112,7 +112,7 @@ const NotesLibrary = () => {
                         </span>
                       </div>
                       
-                      <p className={`mb-3 transition-colors duration-300 ${
+                      <p className={`mb-3 transition-colors duration-300 text-sm ${
                         theme === 'dark' ? 'text-[#DDDDDD]' : 'text-[#333333]'
                       }`}>
                         {note.noteText}
