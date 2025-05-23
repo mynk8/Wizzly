@@ -1,110 +1,49 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  MultimodalLiveAPIClientConnection,
-  MultimodalLiveClient,
-} from "../lib/multimodal-live-client";
-import { LiveConfig } from "../lib/multimodal-live-types";
+import { GenAILiveClient } from "../lib/multimodal-live-client";
+import { LiveClientOptions } from "../lib/multimodal-live-types";
 import { AudioStreamer } from "../lib/audio-streamer";
 import { audioContext } from "../lib/utils";
-import VolMeterWorket from "../lib/worklets/vol-meter";
-import useStore from "@/entrypoints/store/store.ts";
-
+import { LiveConnectConfig } from "@google/genai";
 
 export type UseLiveAPIResults = {
-  client: MultimodalLiveClient;
-  setConfig: (config: LiveConfig) => void;
-  config: LiveConfig;
+  client: GenAILiveClient;
+  setConfig: (config: LiveConnectConfig) => void;
+  config: LiveConnectConfig;
+  model: string;
+  setModel: (model: string) => void;
   connected: boolean;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
   volume: number;
+  outputTranscription: { text: string; finished: boolean } | null;
 };
 
-export function useLiveAPI({
-  url,
-  apiKey,
-}: MultimodalLiveAPIClientConnection): UseLiveAPIResults {
-  const client = useMemo(
-    () => new MultimodalLiveClient({ url, apiKey }),
-    [url, apiKey],
-  );
+export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
+  const client = useMemo(() => new GenAILiveClient(options), [options]);
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
-  const transcript = useStore((state) => state.transcript);
 
-  const [connected, setConnected] = useState(false);
-  const [config, setConfig] = useState<LiveConfig>({
-    model: "models/gemini-2.0-flash-exp",
-    systemInstruction: {
-      parts:
-        [{
-          text: `
-          You are Wizzly, an AI assistant for YouTube tutorial videos. Your task is to help users understand and navigate the video transcript by:
-
-Answering questions based on the transcript.
-
-Providing timestamps when relevant.
-
-Summarizing sections or the full video.
-
-Extracting key points and notes for easy review.
-
-Detecting when help is needed (e.g., frequent pauses or rewinds).
-
-Only use the transcript provided. If information is missing, politely inform the user.
-Say Hello to the user if understood and when you start.
-Transcript:
-${transcript}
-` }]
-    },
+  const [model, setModel] = useState<string>("gemini-2.0-flash-live-001");
+  const [config, setConfig] = useState<LiveConnectConfig>({
+    outputAudioTranscription: {}
   });
-
-  useEffect(() => {
-    console.log("Transcript updated in Zustand:", transcript); // Debug log
-
-    setConfig((prevConfig) => ({
-      ...prevConfig,
-      systemInstruction: {
-        parts: [
-          {
-            text: `
-            You are Wizzly, an AI assistant for YouTube tutorial videos. Your task is to help users understand and navigate the video transcript by:
-
-            Answering questions based on the transcript.
-            Providing timestamps when relevant.
-            Summarizing sections or the full video.
-            Extracting key points and notes for easy review.
-            Detecting when help is needed (e.g., frequent pauses or rewinds).
-
-            Only use the transcript provided. If information is missing, politely inform the user.
-
-            Say Hello to the user if understood and when you start.
-
-            Transcript:
-            ${transcript}
-          `,
-          },
-        ],
-      },
-    }));
-  }, [transcript]);
+  const [connected, setConnected] = useState(false);
   const [volume, setVolume] = useState(0);
+  const [outputTranscription, setOutputTranscription] = useState<{ text: string; finished: boolean } | null>(null);
+
   // register audio for streaming server -> speakers
   useEffect(() => {
     if (!audioStreamerRef.current) {
       audioContext({ id: "audio-out" }).then((audioCtx: AudioContext) => {
         audioStreamerRef.current = new AudioStreamer(audioCtx);
-        audioStreamerRef.current
-          .addWorklet<any>("vumeter-out", VolMeterWorket, (ev: any) => {
-            setVolume(ev.data.volume);
-          })
-          .then(() => {
-            // Successfully added worklet
-          });
       });
     }
   }, [audioStreamerRef]);
 
   useEffect(() => {
+    const onOpen = () => {
+      setConnected(true);
+    };
+
     const onClose = () => {
       setConnected(false);
     };
@@ -114,29 +53,34 @@ ${transcript}
     const onAudio = (data: ArrayBuffer) =>
       audioStreamerRef.current?.addPCM16(new Uint8Array(data));
 
+    const onOutputTranscription = (transcription: { text: string; finished: boolean }) => {
+      setOutputTranscription(transcription);
+    };
+
     client
+      .on("open", onOpen)
       .on("close", onClose)
       .on("interrupted", stopAudioStreamer)
-      .on("audio", onAudio);
+      .on("audio", onAudio)
+      .on("outputtranscription", onOutputTranscription);
 
     return () => {
       client
+        .off("open", onOpen)
         .off("close", onClose)
         .off("interrupted", stopAudioStreamer)
-        .off("audio", onAudio);
+        .off("audio", onAudio)
+        .off("outputtranscription", onOutputTranscription);
     };
   }, [client]);
 
   const connect = useCallback(async () => {
-    console.log(config);
     if (!config) {
       throw new Error("config has not been set");
     }
     client.disconnect();
-    await client.connect(config);
-    console.log("Transcript set in config", transcript);
-    setConnected(true);
-  }, [client, setConnected, config]);
+    await client.connect(model, config);
+  }, [client, config, model]);
 
   const disconnect = useCallback(async () => {
     client.disconnect();
@@ -147,9 +91,12 @@ ${transcript}
     client,
     config,
     setConfig,
+    model,
+    setModel,
     connected,
     connect,
     disconnect,
     volume,
+    outputTranscription,
   };
 }

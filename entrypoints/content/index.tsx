@@ -1,8 +1,8 @@
-import { storage } from 'wxt/storage';
+import { storage } from '#imports';
 import "./style.output.css";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
-import useStore  from "../store/store";
+import useStore from "../store/store";
 
 
 function extractTranscript() {
@@ -74,66 +74,17 @@ export default defineContentScript({
   cssInjectionMode: "ui",
 
   async main(ctx) {
-    const container = document.createElement("div");
-    container.id = "wxt-react-example-container";
-    container.style.position = "fixed";
-    container.style.top = "50px";
-    container.style.left = "50px";
-    container.style.zIndex = "9999";
-    container.style.maxHeight = "10vh";
-    container.style.cursor = "grab";
-    container.style.overflow = "hidden";
-    container.style.fontSize = "29px";
-    
-    // container.style.cssText = `
-    // :host {
-    //     all: initial;
-    // }
-
-    // * {
-    //     font-family: 'Inter', sans-serif;
-    //     font-size: 14px;
-    // }
-    // `;
-    document.body.prepend(container);
-
-    let isDragging = false;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    container.addEventListener("mousedown", (e) => {
-      isDragging = true;
-      offsetX = e.clientX - container.getBoundingClientRect().left;
-      offsetY = e.clientY - container.getBoundingClientRect().top;
-      container.style.cursor = "grabbing";
-    });
-
-    document.addEventListener("mousemove", (e) => {
-      if (!isDragging) return;
-      container.style.left = `${e.clientX - offsetX}px`;
-      container.style.top = `${e.clientY - offsetY}px`;
-    });
-
-    document.addEventListener("mouseup", () => {
-      isDragging = false;
-      container.style.cursor = "grab";
-    });
-
-    // Wrap the app container in a Shadow DOM
     const ui = await createShadowRootUi(ctx, {
-      name: "wiz-agent",
-      // Use the draggable container as the anchor for the Shadow DOM.
-      position: "inline",
-      anchor: container,
-      append: "first", onMount: (shadowContainer) => {
-          shadowContainer.style.all = "unset";
-        const root = ReactDOM.createRoot(shadowContainer);
+      name: 'wiz-agent',
+      anchor: 'body',
+      position: 'inline',
+      onMount: (container) => {
+        const root = ReactDOM.createRoot(container);
         root.render(<App />);
-        return { root };
+        return root;
       },
-      onRemove: (elements) => {
-        elements?.root.unmount();
-        container.remove();
+      onRemove: (root) => {
+        root?.unmount();
       },
     });
 

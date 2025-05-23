@@ -3,6 +3,7 @@ import { useGenAIContext } from "@/entrypoints/contexts/ChatAPIContext";
 import useStore from "@/entrypoints/store/store.ts";
 import { BookOpen, X } from "lucide-react";
 import NoteSelector from "./NoteSelector";
+import SuggestionsCarousel from "./SuggestionsCarousel";
 import { Note } from "../store/notesStore";
 import { youTubeControlDeclarations } from "@/entrypoints/lib/functionDeclarations";
 import { playYouTubeVideo, pauseYouTubeVideo, getYouTubeVideoStatus, jumpToTimeInVideo } from "@/entrypoints/lib/youtubeControls";
@@ -73,6 +74,15 @@ const Chat = () => {
   const chatRef = useRef<any>(null);
   const isDark = theme === 'dark';
 
+  // Define some example suggestions
+  const [suggestions, setSuggestions] = useState([
+    { id: "1", text: "What is this video about?" },
+    { id: "2", text: "Summarize the key points." },
+    { id: "3", text: "What are the main topics discussed?" },
+    { id: "4", text: "What is the main message of the video?" },
+    { id: "5", text: "What is the main takeaway from the video?" },
+  ]);
+
   const memoizedHistory = useMemo(
     () =>
       messages.map((msg) => ({
@@ -128,6 +138,13 @@ const Chat = () => {
 
   const handleRemoveNote = (noteId: string) => {
     setSelectedNotes(prev => prev.filter(note => note.id !== noteId));
+  };
+
+  // Function to handle suggestion click
+  const handleSuggestionClick = (suggestionText: string) => {
+    setInput(suggestionText);
+    // Optionally, send the message immediately after clicking a suggestion
+    // sendMessage(); // Uncomment this line if you want to send immediately
   };
 
   // Function to execute YouTube control functions
@@ -208,9 +225,12 @@ const Chat = () => {
     
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      // Check if the input is not empty before sending
+      if (input.trim()) {
+        sendMessage();
+      }
     }
-  }, []);
+  }, [input, sendMessage]);
 
   // Prevent events from reaching YouTube player
   useEffect(() => {
@@ -246,7 +266,7 @@ const Chat = () => {
   `;
 
   return (
-    <div className={`flex flex-col h-[480px] transition-colors duration-300 ${isDark ? 'bg-[#0A0A0A] text-[#FFFFFF]' : 'bg-[#FFFFFF] text-[#000000]'} font-sans`}>
+    <div className={`flex flex-col h-full transition-colors duration-300 ${isDark ? 'bg-[#0A0A0A] text-[#FFFFFF]' : 'bg-[#FFFFFF] text-[#000000]'} font-sans`}>
       <style>{scrollbarStyles}</style>
       
       {/* Note context badges */}
@@ -265,6 +285,8 @@ const Chat = () => {
         </div>
       )}
       
+
+      
       <main className="flex-1 overflow-y-auto px-4 py-3 space-y-2 hide-scrollbar">
         {messages.map((msg, index) => (
           <BotMessage 
@@ -275,8 +297,16 @@ const Chat = () => {
           />
         ))}
         <div ref={messagesEndRef} />
+
       </main>
       <footer className={`p-3 border-t transition-colors duration-300 ${isDark ? 'border-[#252525] bg-[#101010]' : 'border-[#E0E0E0] bg-[#F5F5F5]'}`}>
+        {messages.length === 0 && (
+          <SuggestionsCarousel 
+            suggestions={suggestions} 
+            onSuggestionClick={handleSuggestionClick}
+            theme={theme}
+          />
+        )}
         <div className="flex items-center gap-2">
           <button
             className={`p-2 rounded-sm flex items-center justify-center transition-colors duration-300 ${

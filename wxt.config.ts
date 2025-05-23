@@ -1,19 +1,11 @@
-import { matches } from "lodash";
-import { defineConfig } from "wxt";
+import { defineConfig } from 'wxt';
+import react from '@vitejs/plugin-react';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
-  modules: ["@wxt-dev/module-react"],
-  runner: {
-    startUrls: ["https://google.com"],
-  },
-  manifest: {
-    permissions: ['storage', 'audio', 'desktopCapture', 'webRequest', 'tabs'],
-    web_accessible_resources: [
-      {
-        resources: ["content/voice.png"],
-        matches: ["*://*/*"]
-      }
-    ]
-  }
+  modules: ['@wxt-dev/module-react'],
+  // @ts-ignore
+  vite: () => ({
+    plugins: [react()],
+  })
 });

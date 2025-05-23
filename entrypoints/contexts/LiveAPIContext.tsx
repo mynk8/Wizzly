@@ -1,21 +1,16 @@
-import { createContext, FC, ReactNode, useContext } from "react";
+import { createContext, useContext } from "react";
 import { useLiveAPI, UseLiveAPIResults } from "../hooks/use-live-api";
+import { LiveClientOptions } from "../lib/multimodal-live-types";
 
 const LiveAPIContext = createContext<UseLiveAPIResults | undefined>(undefined);
 
-
 export type LiveAPIProviderProps = {
-  children: ReactNode;
-  url?: string;
-  apiKey: string;
+  options: LiveClientOptions;
+  children: React.ReactNode;
 };
 
-export const LiveAPIProvider: FC<LiveAPIProviderProps> = ({
-  url,
-  apiKey,
-  children,
-}) => {
-  const liveAPI = useLiveAPI({ url, apiKey });
+export const LiveAPIProvider = ({ options, children }: LiveAPIProviderProps) => {
+  const liveAPI = useLiveAPI(options);
 
   return (
     <LiveAPIContext.Provider value={liveAPI}>
@@ -27,7 +22,7 @@ export const LiveAPIProvider: FC<LiveAPIProviderProps> = ({
 export const useLiveAPIContext = () => {
   const context = useContext(LiveAPIContext);
   if (!context) {
-    throw new Error("useLiveAPIContext must be used wihin a LiveAPIProvider");
+    throw new Error("useLiveAPIContext must be used within a LiveAPIProvider");
   }
   return context;
 };

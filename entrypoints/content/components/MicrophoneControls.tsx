@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { AudioRecorder } from "@/entrypoints/lib/audio-recorder.ts";
 import { useLiveAPIContext } from "@/entrypoints/contexts/LiveAPIContext.tsx";
 import { Mic, MicOff, Pause, Play } from "lucide-react";
 import image from '@/entrypoints/assets/image.png';
 import gif from '@/entrypoints/assets/wizzlytalkss.gif';
 import useStore from '@/entrypoints/store/store';
+import StreamingTranscription from './StreamingTranscription';
 
 const Speak = () => {
   const [inVolume, setInVolume] = useState(50);
@@ -12,9 +13,10 @@ const Speak = () => {
   const [muted, setMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const connectButtonRef = useRef<HTMLElement>(null);
-  const { client, connect, connected, volume, disconnect } = useLiveAPIContext();
   const { theme } = useStore();
   const isDark = theme === 'dark';
+
+  const { client, connect, connected, disconnect, volume, outputTranscription } = useLiveAPIContext();
 
   useEffect(() => {
     if (!connected && connectButtonRef.current) {
@@ -22,28 +24,32 @@ const Speak = () => {
     }
   }, [connected]);
 
+  // Update isPlaying state based on connection and muting status
+  useEffect(() => {
+    setIsPlaying(connected && !muted);
+  }, [connected, muted]);
+  
   useEffect(() => {
     const onData = (base64: string) => {
-      client.sendRealtimeInput([
-        {
-          mimeType: 'audio/pcm;rate=16000',
-          data: base64
-        }
-      ]);
+      if (client && connected && !muted) {
+        client.sendRealtimeInput([{ mimeType: "audio/pcm;rate=16000", data: base64 }]);
+      }
     };
+
+    const onVolumeChange = (vol: number) => {
+      setInVolume(vol);
+    };
+
     if (connected && !muted && audioRecorder) {
-      audioRecorder.on("data", onData).on("volume", setInVolume).start();
+      audioRecorder.on("data", onData).on("volume", onVolumeChange).start();
     } else {
-      audioRecorder.stop();
+      audioRecorder.off("data", onData).off("volume", onVolumeChange).stop();
     }
+
     return () => {
-      audioRecorder.off("data", onData).off("volume", setInVolume).stop();
+      audioRecorder.off("data", onData).off("volume", onVolumeChange).stop();
     };
   }, [connected, client, muted, audioRecorder]);
-
-  useEffect(() => {
-    setIsPlaying(volume > 0.01)
-  }, [volume]);
 
   // Custom scrollbar styles
   const scrollbarStyles = `
@@ -65,6 +71,13 @@ const Speak = () => {
             src={isPlaying ? gif : image}
             className="w-auto h-auto object-contain rounded-md"
             style={{ maxHeight: "320px", maxWidth: "100%" }}
+            alt={isPlaying ? "Wizzly talking animation" : "Wizzly static image"}
+        />
+      </div>
+      <div>
+        <StreamingTranscription 
+          transcription={outputTranscription} 
+          connected={connected} 
         />
       </div>
       <div className="flex gap-3 mt-6 mb-3">
@@ -93,6 +106,7 @@ const Speak = () => {
               : "bg-[#F53B3B] text-white hover:bg-[#D72F2F]"
           }`}
           style={{ height: '42px' }}
+          disabled={!connected}
         >
           {muted ? 
             <>
@@ -110,4 +124,4 @@ const Speak = () => {
   );
 };
 
-export default Speak;
+export default memo(Speak);

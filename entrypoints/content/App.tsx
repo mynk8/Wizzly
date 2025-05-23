@@ -1,6 +1,6 @@
 import './style.output.css';
 import { useState, useEffect } from "react";
-import { Expand, Minimize, Settings, MessageSquare, Mic, Moon, Sun, BookMarked, PenLine } from 'lucide-react';
+import { Expand, Minimize, Settings, MessageSquare, Mic, Moon, Sun, BookMarked, PenLine, Pin, PinOff } from 'lucide-react';
 import Speak from "@/entrypoints/content/components/MicrophoneControls.tsx";
 import Chat from './components/Chat';
 import { LiveAPIProvider } from "@/entrypoints/contexts/LiveAPIContext.tsx";
@@ -24,6 +24,8 @@ interface TitleBarProps {
   theme: 'dark' | 'light';
   onToggleTheme: () => void;
   onTakeNote: () => void;
+  onPinWindow: () => void;
+  isPinned: boolean;
 }
 
 function TitleBar({ 
@@ -36,7 +38,9 @@ function TitleBar({
   onToggleMode, 
   theme, 
   onToggleTheme,
-  onTakeNote
+  onTakeNote,
+  onPinWindow,
+  isPinned
 }: TitleBarProps) {
   const settingsButton = async () => {
     browser.runtime.sendMessage({ action: "openSettings" });
@@ -51,7 +55,7 @@ function TitleBar({
       onMouseDown={onDragStart}
     >
       <div className="flex gap-3 items-center">
-        <div className={`flex rounded overflow-hidden border border-2 transition-colors duration-300 ${
+        <div className={`flex rounded overflow-hidden border transition-colors duration-300 ${
           theme === 'dark' ? 'border-[#252525]' : 'border-[#D0D0D0]'
         }`}>
           <button 
@@ -118,6 +122,17 @@ function TitleBar({
       </div>
       <div className="flex gap-4 dark:bg-[#1A1A1A] p-2 rounded-md">
         <button
+          onClick={onPinWindow}
+          className="transition-colors duration-300"
+          title={isPinned ? "Unpin Window" : "Pin Window"}
+        >
+          {isPinned ? (
+            <PinOff className={`w-4 h-4 ${theme === 'dark' ? 'text-[#8E8E8E] hover:text-[#FFFFFF]' : 'text-[#666666] hover:text-[#000000]'} transition-colors duration-300`} />
+          ) : (
+            <Pin className={`w-4 h-4 ${theme === 'dark' ? 'text-[#8E8E8E] hover:text-[#FFFFFF]' : 'text-[#666666] hover:text-[#000000]'} transition-colors duration-300`} />
+          )}
+        </button>
+        <button
           onClick={onToggleTheme}
           className="transition-colors duration-300"
         >
@@ -162,11 +177,14 @@ function App() {
   const [collapsed, setCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [position, setPosition] = useState({ x: 100, y: 100 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [noteModalOpen, setNoteModalOpen] = useState(false);
   const { mode, setMode, theme, toggleTheme } = useStore();
+  const [isPinned, setIsPinned] = useState(true);
+  const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (isPinned) return; // Disable dragging when pinned
     setIsDragging(true);
     setOffset({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
@@ -185,6 +203,17 @@ function App() {
     setNoteModalOpen(true);
   };
 
+  const handlePinWindow = () => {
+    if (isPinned) {
+      setPosition(lastPosition);
+      setIsPinned(false);
+    } else {
+      setLastPosition(position);
+      setPosition({ x: 0, y: 0 });
+      setIsPinned(true);
+    }
+  };
+
   useEffect(() => {
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", () => setIsDragging(false));
@@ -196,16 +225,18 @@ function App() {
 
   return (
     <div
-      className={`fixed shadow-2xl flex flex-col border rounded-md overflow-hidden transition-colors duration-300 ${
+      className={`fixed shadow-2xl flex flex-col border overflow-hidden transition-colors duration-300 ${
         theme === 'dark' 
           ? 'border-[#252525]' 
           : 'border-[#D0D0D0]'
       }`}
       style={{
+        zIndex: 1000000000000,
         top: position.y,
-        left: position.x,
-        width: "480px",
-        maxHeight: "90vh",
+        left: isPinned ? undefined : position.x,
+        ...(isPinned && { right: 0 }),
+        maxWidth: "540px",
+        height: collapsed ? 'auto' : '100vh',
         backgroundColor: theme === 'dark' ? '#0A0A0A' : '#FFFFFF',
       }}
     >
@@ -220,14 +251,16 @@ function App() {
         theme={theme}
         onToggleTheme={toggleTheme}
         onTakeNote={handleTakeNote}
+        onPinWindow={handlePinWindow}
+        isPinned={isPinned}
       />
       
       <NoteModal isOpen={noteModalOpen} onClose={() => setNoteModalOpen(false)} />
       
       {!collapsed && (
-        <div className="flex flex-col gap-2 p-0 overflow-auto">
+        <div className="flex flex-col gap-2 p-0 overflow-auto h-full">
           {mode === 'voice' ? (
-            <LiveAPIProvider apiKey={apiKey} url={uri}>
+            <LiveAPIProvider options={{ apiKey: apiKey }}>
               <Speak />
             </LiveAPIProvider>
           ) : mode === 'chat' ? (
