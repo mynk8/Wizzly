@@ -37,7 +37,6 @@ const StreamingTranscription = ({ transcription, connected }: StreamingTranscrip
 
       setWords(prevWords => {
         const allWords = [...prevWords, ...newWords];
-        // Keep only last 16 words (4 rows of 4 words)
         return allWords.slice(-16);
       });
       setCurrentText('');

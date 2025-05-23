@@ -44,11 +44,9 @@ const NoteModal = ({ isOpen, onClose }: NoteModalProps) => {
 
   useEffect(() => {
     if (isOpen) {
-      // Get current video information
       const video = document.querySelector('video');
       const currentTime = video?.currentTime || 0;
-      
-      // Format timestamp as HH:MM:SS
+
       const hours = Math.floor(currentTime / 3600);
       const minutes = Math.floor((currentTime % 3600) / 60);
       const seconds = Math.floor(currentTime % 60);
@@ -58,7 +56,6 @@ const NoteModal = ({ isOpen, onClose }: NoteModalProps) => {
         seconds.toString().padStart(2, '0')
       ].join(':');
       
-      // Get video title and URL
       const title = document.title.replace(' - YouTube', '');
       const url = window.location.href;
       
@@ -70,7 +67,6 @@ const NoteModal = ({ isOpen, onClose }: NoteModalProps) => {
       setScreenshot(null);
       setScreenshotError(null);
       
-      // Attempt to capture screenshot
       captureScreenshot();
     }
   }, [isOpen, lastUsedTopic]);
@@ -80,7 +76,6 @@ const NoteModal = ({ isOpen, onClose }: NoteModalProps) => {
       setScreenshotLoading(true);
       setScreenshotError(null);
       
-      // Check if video element exists and is playing
       const video = document.querySelector('video');
       if (!video) {
         setScreenshotError('No video found on this page.');
@@ -94,7 +89,6 @@ const NoteModal = ({ isOpen, onClose }: NoteModalProps) => {
         return;
       }
       
-      // Try to capture screenshot with improved method
       const screenshotData = await captureVideoScreenshot();
       
       if (!screenshotData) {

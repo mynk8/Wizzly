@@ -18,21 +18,19 @@ const SuggestionsCarousel: React.FC<SuggestionsCarouselProps> = ({ suggestions, 
     return null;
   }
 
-  // Split suggestions into two rows
   const midPoint = Math.ceil(suggestions.length / 2);
   const row1Suggestions = suggestions.slice(0, midPoint);
   const row2Suggestions = suggestions.slice(midPoint);
 
   const renderRow = (rowSuggestions: Suggestion[], animationDirection: 'left' | 'right') => {
     if (!rowSuggestions.length) return null;
-    // Duplicate suggestions for seamless animation
     const duplicatedSuggestions = [...rowSuggestions, ...rowSuggestions];
 
     return (
       <div className="overflow-hidden whitespace-nowrap w-full fadable-edges">
         <div 
           className={`flex animate-marquee-${animationDirection}`}
-          style={{ animationDuration: `${rowSuggestions.length * 5}s` }} // Adjust speed based on number of items
+          style={{ animationDuration: `${rowSuggestions.length * 5}s` }}
         >
           {duplicatedSuggestions.map((suggestion, index) => (
             <button

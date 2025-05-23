@@ -10,7 +10,7 @@ export interface Note {
   videoTitle: string;
   videoUrl: string;
   createdAt: string;
-  screenshot?: string; // Base64 encoded screenshot
+  screenshot?: string;
 }
 
 interface NotesState {
@@ -27,7 +27,6 @@ interface NotesState {
   exportAllNotesToPDF: () => void;
 }
 
-// Create IndexedDB database for notes
 const DB_NAME = 'wizzly-notes-db';
 const DB_VERSION = 1;
 const STORE_NAME = 'notes';
@@ -54,7 +53,6 @@ const openDatabase = (): Promise<IDBDatabase> => {
   });
 };
 
-// Custom storage adapter for IndexedDB
 const indexedDBStorage = {
   getItem: async (name: string): Promise<string | null> => {
     try {
@@ -127,22 +125,18 @@ const indexedDBStorage = {
   },
 };
 
-// Function to capture screenshot of video - modified to improve reliability
 export const captureVideoScreenshot = async (): Promise<string | null> => {
   try {
     const video = document.querySelector('video');
     if (!video || video.paused || video.readyState < 2) return null;
     
-    // Create canvas with video dimensions
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth || 640;
     canvas.height = video.videoHeight || 360;
     
-    // Draw video frame to canvas
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
     
-    // Force a draw with timeout to ensure the frame is captured
     return new Promise((resolve) => {
       setTimeout(() => {
         try {
@@ -161,28 +155,21 @@ export const captureVideoScreenshot = async (): Promise<string | null> => {
   }
 };
 
-// Generate PDF for a note
 export const generateNotePDF = (note: Note) => {
-  // Create HTML content for the PDF
   const htmlContent = createNoteHtml(note);
   
-  // Open a new window and write the HTML content
   const printWindow = window.open('', '_blank', 'width=800,height=600');
   if (!printWindow) return;
   
   printWindow.document.write(htmlContent);
   printWindow.document.close();
   
-  // Wait for resources to load, then print
   setTimeout(() => {
     printWindow.print();
-    // Don't close the window so the user can see the print dialog
   }, 300);
 };
 
-// Generate PDF for a topic
 export const generateTopicPDF = (topicName: string, notes: Note[]) => {
-  // Create HTML content for all notes in the topic
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -269,25 +256,20 @@ export const generateTopicPDF = (topicName: string, notes: Note[]) => {
     </body>
     </html>
   `;
-  
-  // Open a new window and write the HTML content
   const printWindow = window.open('', '_blank', 'width=800,height=600');
   if (!printWindow) return;
   
   printWindow.document.write(htmlContent);
   printWindow.document.close();
   
-  // Wait for resources to load, then print
   setTimeout(() => {
     printWindow.print();
   }, 500);
 };
 
-// Generate PDF for all notes
 export const generateAllNotesPDF = (notesByTopic: Record<string, Note[]>) => {
   const topics = Object.keys(notesByTopic).sort();
   
-  // Create HTML content for all notes organized by topic
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -390,20 +372,17 @@ export const generateAllNotesPDF = (notesByTopic: Record<string, Note[]>) => {
     </html>
   `;
   
-  // Open a new window and write the HTML content
   const printWindow = window.open('', '_blank', 'width=800,height=600');
   if (!printWindow) return;
   
   printWindow.document.write(htmlContent);
   printWindow.document.close();
   
-  // Wait for resources to load, then print
   setTimeout(() => {
     printWindow.print();
   }, 800);
 };
 
-// Helper function to create HTML for a single note
 const createNoteHtml = (note: Note) => {
   return `
     <!DOCTYPE html>
@@ -538,7 +517,6 @@ const useNotesStore = create<NotesState>()(
       
       importNotes: (importedNotes) => set((state) => {
         try {
-          // Validate imported notes structure
           if (!Array.isArray(importedNotes)) {
             throw new Error('Imported notes must be an array');
           }
@@ -603,7 +581,6 @@ const useNotesStore = create<NotesState>()(
       name: 'wizzly-notes-storage',
       storage: createJSONStorage(() => indexedDBStorage),
       onRehydrateStorage: () => (state) => {
-        // Validate rehydrated state
         if (state && (!Array.isArray(state.notes) || typeof state.lastUsedTopic !== 'string')) {
           console.error('Invalid rehydrated state structure');
           return { notes: [], lastUsedTopic: '' };

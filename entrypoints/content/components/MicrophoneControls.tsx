@@ -13,10 +13,22 @@ const Speak = () => {
   const [muted, setMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const connectButtonRef = useRef<HTMLElement>(null);
-  const { theme } = useStore();
+  const { theme, transcript } = useStore();
   const isDark = theme === 'dark';
 
-  const { client, connect, connected, disconnect, volume, outputTranscription } = useLiveAPIContext();
+  const { client, connect, connected, disconnect, volume, outputTranscription, setConfig } = useLiveAPIContext();
+
+  // Update configuration with transcript when it changes
+  useEffect(() => {
+    const systemPrompt = transcript 
+      ? `You are a helpful voice assistant. Please answer questions about the YouTube video using this transcript: ${transcript}`
+      : `You are a helpful voice assistant. Please answer questions about the YouTube video.`;
+      
+    setConfig({
+      outputAudioTranscription: {},
+      systemInstruction: systemPrompt
+    });
+  }, [transcript, setConfig]);
 
   useEffect(() => {
     if (!connected && connectButtonRef.current) {

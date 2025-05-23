@@ -21,27 +21,10 @@ function extractTranscript() {
         .join('\n');
 }
 
-function sendVideoInfoToStorage() {
-    const transcript = extractTranscript();
-    if (!transcript) {
-        console.log("No transcript available.");
-        return;
-    }
-
-    storage.getItem("local:YTTranscript")
-        .then((_) => {
-            const setTranscript = useStore.getState().setTranscript;
-            if (typeof setTranscript === "function") {
-                setTranscript(transcript);
-            }
-            storage.setItem("local:YTTranscript", transcript)
-                .catch(error => {
-                    console.error("❌ Storage error during saving the transcript:", error);
-                });
-        })
-        .catch(error => {
-            console.error("❌ Error retrieving stored transcript:", error);
-        });
+function extractVideoId() {
+    const url = window.location.href;
+    const urlParams = new URLSearchParams(new URL(url).search);
+    return urlParams.get('v') || null;
 }
 
 function openTranscriptPanel() {
@@ -60,12 +43,38 @@ function pollTranscriptPanel() {
 }
 
 function startObserving() {
+    const store = useStore.getState();
+    let lastCheckedVideoId: string | null = null;
+    let transcriptUpdateTimeout: ReturnType<typeof setTimeout> | null = null;
+    
     setInterval(() => {
+        const currentVideoId = extractVideoId();
+        
+        if (currentVideoId !== lastCheckedVideoId) {
+            console.log("Video changed, updating video ID");
+            lastCheckedVideoId = currentVideoId;
+            store.setCurrentVideoId(currentVideoId);
+            
+            if (store.transcript) {
+                store.setTranscript(null);
+            }
+            
+            if (transcriptUpdateTimeout) {
+                clearTimeout(transcriptUpdateTimeout);
+            }
+            
+            transcriptUpdateTimeout = setTimeout(() => {
         pollTranscriptPanel();
-    }, 2000);
-
-    setInterval(() => {
-        sendVideoInfoToStorage();
+                
+                setTimeout(() => {
+                    const transcript = extractTranscript();
+                    if (transcript && transcript !== store.transcript) {
+                        console.log("Transcript updated for new video");
+                        store.setTranscript(transcript);
+                    }
+                }, 2000);
+            }, 1000);
+        }
     }, 2000);
 }
 

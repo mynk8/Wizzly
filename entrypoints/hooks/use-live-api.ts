@@ -30,7 +30,6 @@ export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
   const [volume, setVolume] = useState(0);
   const [outputTranscription, setOutputTranscription] = useState<{ text: string; finished: boolean } | null>(null);
 
-  // register audio for streaming server -> speakers
   useEffect(() => {
     if (!audioStreamerRef.current) {
       audioContext({ id: "audio-out" }).then((audioCtx: AudioContext) => {

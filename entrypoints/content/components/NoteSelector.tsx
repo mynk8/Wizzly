@@ -28,10 +28,8 @@ const NoteSelector = ({ isOpen, onClose, onSelectNote }: NoteSelectorProps) => {
   const filteredTopics = topics.filter(topic => {
     if (!searchTerm) return true;
     
-    // Check if topic name matches search
     if (topic.toLowerCase().includes(searchTerm.toLowerCase())) return true;
     
-    // Check if any note in the topic matches search
     return notesByTopic[topic].some(note => 
       note.noteText.toLowerCase().includes(searchTerm.toLowerCase()) ||
       note.videoTitle.toLowerCase().includes(searchTerm.toLowerCase())

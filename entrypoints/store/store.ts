@@ -11,10 +11,13 @@ interface StoreState {
     messages: Message[];
     addMessage: (message: Message) => void;
     updateLastMessage: (text: string) => void;
-    transcript: string;
-    setTranscript: (transcript: string) => void;
+    resetMessages: () => void;
     theme: 'dark' | 'light';
     toggleTheme: () => void;
+    transcript: string | null;
+    setTranscript: (transcript: string | null) => void;
+    currentVideoId: string | null;
+    setCurrentVideoId: (videoId: string | null) => void;
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -29,10 +32,13 @@ const useStore = create<StoreState>((set) => ({
         }
         return { messages };
     }),
-    transcript: "",
-    setTranscript: (transcript) => set({ transcript }),
+    resetMessages: () => set({ messages: [] }),
     theme: 'dark',
     toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
+    transcript: null,
+    setTranscript: (transcript) => set({ transcript }),
+    currentVideoId: null,
+    setCurrentVideoId: (videoId) => set({ currentVideoId: videoId }),
 }));
 
 export default useStore;

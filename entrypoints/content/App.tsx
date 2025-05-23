@@ -184,7 +184,7 @@ function App() {
   const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (isPinned) return; // Disable dragging when pinned
+    if (isPinned) return;
     setIsDragging(true);
     setOffset({ x: e.clientX - position.x, y: e.clientY - position.y });
   };

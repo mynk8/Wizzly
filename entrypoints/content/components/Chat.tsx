@@ -1,7 +1,7 @@
 import { useRef, useEffect, useMemo, useCallback, useState } from "react";
 import { useGenAIContext } from "@/entrypoints/contexts/ChatAPIContext";
 import useStore from "@/entrypoints/store/store.ts";
-import { BookOpen, X } from "lucide-react";
+import { BookOpen, X, RefreshCw } from "lucide-react";
 import NoteSelector from "./NoteSelector";
 import SuggestionsCarousel from "./SuggestionsCarousel";
 import { Note } from "../store/notesStore";
@@ -28,7 +28,6 @@ const BotMessage = ({ message, role, theme }: { message: string; role: string; t
 
 const NoteBadge = ({ note, onRemove, theme }: { note: Note; onRemove: () => void; theme: 'dark' | 'light' }) => {
   const isDark = theme === 'dark';
-  // Get initials from note text (first 2 words)
   const initials = note.noteText
     .split(' ')
     .slice(0, 2)
@@ -62,7 +61,7 @@ const NoteBadge = ({ note, onRemove, theme }: { note: Note; onRemove: () => void
 
 const Chat = () => {
   const { ai } = useGenAIContext();
-  const { messages, addMessage, updateLastMessage, theme } = useStore();
+  const { messages, addMessage, updateLastMessage, theme, transcript, resetMessages } = useStore();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [noteSelectorOpen, setNoteSelectorOpen] = useState(false);
@@ -70,11 +69,9 @@ const Chat = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   
-  const transcript = useStore((state) => state.transcript);
   const chatRef = useRef<any>(null);
   const isDark = theme === 'dark';
 
-  // Define some example suggestions
   const [suggestions, setSuggestions] = useState([
     { id: "1", text: "What is this video about?" },
     { id: "2", text: "Summarize the key points." },
@@ -94,7 +91,12 @@ const Chat = () => {
 
   // Combine transcript and selected notes for context
   const contextWithNotes = useMemo(() => {
-    let context = transcript || '';
+    let context = '';
+    
+    // Add transcript from store if available
+    if (transcript) {
+      context += `\n\nVideo Transcript:\n${transcript}\n`;
+    }
     
     if (selectedNotes.length > 0) {
       context += '\n\nAdditional context from notes:\n';
@@ -104,7 +106,7 @@ const Chat = () => {
     }
     
     return context;
-  }, [transcript, selectedNotes]);
+  }, [selectedNotes, transcript]);
 
   useEffect(() => {
     // Always recreate chat when context changes (transcript or notes)
@@ -129,7 +131,6 @@ const Chat = () => {
   }, [messages, scrollToBottom]);
 
   const handleAddNote = (note: Note) => {
-    // Check if note is already selected
     if (!selectedNotes.some(n => n.id === note.id)) {
       setSelectedNotes(prev => [...prev, note]);
     }
@@ -140,14 +141,10 @@ const Chat = () => {
     setSelectedNotes(prev => prev.filter(note => note.id !== noteId));
   };
 
-  // Function to handle suggestion click
   const handleSuggestionClick = (suggestionText: string) => {
     setInput(suggestionText);
-    // Optionally, send the message immediately after clicking a suggestion
-    // sendMessage(); // Uncomment this line if you want to send immediately
   };
 
-  // Function to execute YouTube control functions
   const executeYouTubeFunction = (functionName: string, args: any) => {
     switch (functionName) {
       case 'play_youtube_video':
@@ -180,11 +177,9 @@ const Chat = () => {
         message: userMessage.text,
       });
 
-      // Check if the response contains function calls
       if (response.functionCalls && response.functionCalls.length > 0) {
         console.log("Function calls detected:", response.functionCalls);
         
-        // Execute function calls and create response
         let functionResponseText = "";
         
         for (const functionCall of response.functionCalls) {
@@ -192,7 +187,6 @@ const Chat = () => {
           const result = executeYouTubeFunction(functionCall.name, functionCall.args);
           console.log("Function result:", result);
           
-          // Create a user-friendly response based on the function result
           if (result.success) {
             functionResponseText += `✅ ${result.message}\n`;
           } else {
@@ -200,13 +194,11 @@ const Chat = () => {
           }
         }
 
-        // Add the function execution result as a bot message
         addMessage({ 
           role: "model", 
           text: functionResponseText.trim() || "Function executed."
         });
       } else {
-        // Regular text response
         addMessage({ role: "model", text: response.text || "No response received." });
       }
     } catch (error) {
@@ -219,20 +211,17 @@ const Chat = () => {
   };
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Completely stop event propagation
     e.stopPropagation();
     (e.nativeEvent as Event).stopImmediatePropagation();
     
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      // Check if the input is not empty before sending
       if (input.trim()) {
         sendMessage();
       }
     }
   }, [input, sendMessage]);
 
-  // Prevent events from reaching YouTube player
   useEffect(() => {
     const input = inputRef.current;
     if (!input) return;
@@ -253,7 +242,36 @@ const Chat = () => {
     };
   }, []);
 
-  // Custom scrollbar styles
+  const handleResetChat = useCallback(() => {
+    // Clear messages in store
+    resetMessages();
+    
+    // Clean up existing chat instance
+    if (chatRef.current) {
+      try {
+        // Attempt to clean up any resources
+        chatRef.current = null;
+      } catch (error) {
+        console.error("Error cleaning up chat instance:", error);
+      }
+    }
+    
+    // Create a new chat instance
+    chatRef.current = ai.chats.create({
+      model: "gemini-2.0-flash",
+      history: [],
+      config: {
+        systemInstruction: `You are a helpful qna assistant you have to answer the questions related to the youtube video of which the transcript you are given here, ${contextWithNotes}. You also have access to YouTube video controls to play, pause, check status, and jump to specific times in the current video.`,
+        tools: [{
+          functionDeclarations: youTubeControlDeclarations
+        }]
+      }
+    });
+    
+    // Clear selected notes
+    setSelectedNotes([]);
+  }, [ai, contextWithNotes, resetMessages]);
+
   const scrollbarStyles = `
     .hide-scrollbar::-webkit-scrollbar {
       width: 0px;
@@ -269,7 +287,25 @@ const Chat = () => {
     <div className={`flex flex-col h-full transition-colors duration-300 ${isDark ? 'bg-[#0A0A0A] text-[#FFFFFF]' : 'bg-[#FFFFFF] text-[#000000]'} font-sans`}>
       <style>{scrollbarStyles}</style>
       
-      {/* Note context badges */}
+      <div className={`px-4 py-2 flex justify-between items-center border-b transition-colors duration-300 ${
+        isDark ? 'border-[#252525] bg-[#101010]' : 'border-[#E0E0E0] bg-[#F5F5F5]'
+      }`}>
+        <div className="text-sm font-medium">
+          {useStore.getState().currentVideoId ? 'Chat' : 'Chat (No video detected)'}
+        </div>
+        <button
+          onClick={handleResetChat}
+          className={`p-1.5 rounded-sm flex items-center justify-center transition-colors duration-300 ${
+            isDark 
+              ? 'bg-[#252525] text-[#8E8E8E] hover:bg-[#3A3A3A] hover:text-[#FFFFFF]' 
+              : 'bg-[#E0E0E0] text-[#666666] hover:bg-[#D0D0D0] hover:text-[#000000]'
+          }`}
+          title="Reset chat"
+        >
+          <RefreshCw className="w-4 h-4" />
+        </button>
+      </div>
+
       {selectedNotes.length > 0 && (
         <div className={`px-4 py-2 flex flex-wrap gap-1 border-b transition-colors duration-300 ${
           isDark ? 'border-[#252525] bg-[#101010]' : 'border-[#E0E0E0] bg-[#F5F5F5]'
@@ -284,8 +320,6 @@ const Chat = () => {
           ))}
         </div>
       )}
-      
-
       
       <main className="flex-1 overflow-y-auto px-4 py-3 space-y-2 hide-scrollbar">
         {messages.map((msg, index) => (
