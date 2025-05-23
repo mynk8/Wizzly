@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
+import Dexie from 'dexie';
 
 export interface Note {
   id: string;
@@ -27,102 +28,75 @@ interface NotesState {
   exportAllNotesToPDF: () => void;
 }
 
-const DB_NAME = 'wizzly-notes-db';
-const DB_VERSION = 1;
-const STORE_NAME = 'notes';
+// Define the Dexie database
+class NotesDatabase extends Dexie {
+  storage: Dexie.Table<{key: string, value: string}, string>;
 
-const openDatabase = (): Promise<IDBDatabase> => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    
-    request.onerror = () => {
-      console.error('Failed to open IndexedDB');
-      reject(request.error);
-    };
-    
-    request.onsuccess = () => {
-      resolve(request.result);
-    };
-    
-    request.onupgradeneeded = (event) => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-      }
-    };
-  });
-};
+  constructor() {
+    super('WizzlyNotesDB');
+    this.version(1).stores({
+      storage: 'key'
+    });
+    this.storage = this.table('storage');
+  }
+}
 
-const indexedDBStorage = {
+const db = new NotesDatabase();
+
+// Create a storage adapter for Zustand persist that uses Dexie
+const dexieStorage = {
   getItem: async (name: string): Promise<string | null> => {
     try {
-      const db = await openDatabase();
-      
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readonly');
-        const store = transaction.objectStore(STORE_NAME);
-        const request = store.get(name);
-        
-        request.onerror = () => {
-          console.error('Error reading from IndexedDB:', request.error);
-          reject(request.error);
-        };
-        
-        request.onsuccess = () => {
-          resolve(request.result ? JSON.stringify(request.result) : null);
-        };
-      });
+      const item = await db.storage.get(name);
+      return item?.value || null;
     } catch (error) {
-      console.error('Error accessing IndexedDB:', error);
+      console.error('Error reading from Dexie:', error);
       return null;
     }
   },
   
   setItem: async (name: string, value: string): Promise<void> => {
     try {
-      const db = await openDatabase();
-      
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
-        const request = store.put({ id: name, data: JSON.parse(value) });
-        
-        request.onerror = () => {
-          console.error('Error writing to IndexedDB:', request.error);
-          reject(request.error);
-        };
-        
-        request.onsuccess = () => {
-          resolve();
-        };
-      });
+      await db.storage.put({ key: name, value });
     } catch (error) {
-      console.error('Error accessing IndexedDB:', error);
+      console.error('Error writing to Dexie:', error);
     }
   },
   
   removeItem: async (name: string): Promise<void> => {
     try {
-      const db = await openDatabase();
-      
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
-        const request = store.delete(name);
-        
-        request.onerror = () => {
-          console.error('Error removing from IndexedDB:', request.error);
-          reject(request.error);
-        };
-        
-        request.onsuccess = () => {
-          resolve();
-        };
-      });
+      await db.storage.delete(name);
     } catch (error) {
-      console.error('Error accessing IndexedDB:', error);
+      console.error('Error removing from Dexie:', error);
     }
-  },
+  }
+};
+
+// Debug function to check Dexie DB contents
+export const debugCheckDexieDB = async (): Promise<void> => {
+  try {
+    const allItems = await db.storage.toArray();
+    console.log('Dexie DB contents:', allItems);
+  } catch (error) {
+    console.error('Error accessing Dexie for debug:', error);
+  }
+};
+
+// Function to verify persistence is working
+export const verifyPersistence = async (): Promise<boolean> => {
+  try {
+    const item = await db.storage.get('wizzly-notes-storage');
+    if (item) {
+      console.log('Store found in Dexie:', item);
+      return true;
+    } else {
+      console.warn('Store not found in Dexie');
+      return false;
+    }
+  } catch (error) {
+    console.error('Error verifying persistence:', error);
+    return false;
+  }
 };
 
 export const captureVideoScreenshot = async (): Promise<string | null> => {
@@ -463,7 +437,9 @@ const createNoteHtml = (note: Note) => {
 
 const useNotesStore = create<NotesState>()(
   persist(
-    (set, get) => ({
+    (set, get) => {
+      console.log('Initializing notes store');
+      return {
       notes: [],
       lastUsedTopic: '',
       
@@ -474,6 +450,7 @@ const useNotesStore = create<NotesState>()(
             id: uuidv4(),
             createdAt: new Date().toISOString(),
           };
+          console.log('Adding note:', newNote);
           return { 
             notes: [...state.notes, newNote],
             lastUsedTopic: noteData.topic
@@ -576,18 +553,43 @@ const useNotesStore = create<NotesState>()(
           console.error('Error exporting all notes to PDF:', error);
         }
       },
-    }),
-    {
-      name: 'wizzly-notes-storage',
-      storage: createJSONStorage(() => indexedDBStorage),
-      onRehydrateStorage: () => (state) => {
-        if (state && (!Array.isArray(state.notes) || typeof state.lastUsedTopic !== 'string')) {
-          console.error('Invalid rehydrated state structure');
-          return { notes: [], lastUsedTopic: '' };
-        }
-      },
-    }
-  )
+    };
+  },
+  {
+    name: 'wizzly-notes-storage',
+    storage: createJSONStorage(() => dexieStorage),
+    onRehydrateStorage: () => (state) => {
+      console.log('Rehydrating state:', state);
+      if (!state) {
+        console.error('No state to rehydrate');
+        return;
+      }
+      
+      if (!Array.isArray(state.notes) || typeof state.lastUsedTopic !== 'string') {
+        console.error('Invalid rehydrated state structure');
+        return;
+      }
+      
+      console.log('State rehydrated successfully with', state.notes.length, 'notes');
+    },
+  }
+)
 );
+
+// Test function to add a sample entry to the database
+export const testDexieDatabase = async (): Promise<void> => {
+  try {
+    await db.storage.put({ key: 'test-key', value: JSON.stringify({ test: 'value', timestamp: Date.now() }) });
+    console.log('Test entry added to Dexie database');
+    
+    const testItem = await db.storage.get('test-key');
+    console.log('Retrieved test entry:', testItem);
+    
+    return Promise.resolve();
+  } catch (error) {
+    console.error('Error testing Dexie database:', error);
+    return Promise.reject(error);
+  }
+};
 
 export default useNotesStore;
