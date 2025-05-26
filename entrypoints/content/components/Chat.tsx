@@ -9,25 +9,21 @@ import { youTubeControlDeclarations } from "@/entrypoints/lib/functionDeclaratio
 import { playYouTubeVideo, pauseYouTubeVideo, getYouTubeVideoStatus, jumpToTimeInVideo } from "@/entrypoints/lib/youtubeControls";
 
 const BotMessage = ({ message, role, theme }: { message: string; role: string; theme: 'dark' | 'light' }) => {
-  const isDark = theme === 'dark';
-
   return (
     <div
-      className={`p-3 mb-2 rounded-sm max-w-[90%] whitespace-pre-wrap transition-colors duration-300 ${role === "user"
-        ? `${isDark ? 'bg-[#252525] text-[#FFFFFF]' : 'bg-[#EBEBEB] text-[#000000]'} ml-auto border-l-2 ${isDark ? 'border-l-[#5D5D5D]' : 'border-l-[#AAAAAA]'}`
-        : `${isDark ? 'bg-[#141414] text-[#FFFFFF]' : 'bg-[#E0E0E0] text-[#000000]'} mr-auto border-l-2 border-l-[#2B5DF5]`
-        }`}
+      className={`chat ${role === "user" ? "chat-end" : "chat-start"} w-full`}
     >
-      <p className={`text-xs font-medium mb-1 uppercase tracking-wide transition-colors duration-300 ${isDark ? 'text-[#8E8E8E]' : 'text-[#666666]'}`}>
+      <div className={`chat-header opacity-50 text-xs uppercase tracking-wide mb-1`}>
         {role === "user" ? "You" : "Bot"}
-      </p>
-      <p className="text-sm leading-relaxed">{message}</p>
+      </div>
+      <div className={`chat-bubble ${role === "user" ? "chat-bubble-primary" : "chat-bubble-secondary"} max-w-[90%] whitespace-pre-wrap`}>
+        {message}
+      </div>
     </div>
   );
 };
 
-const NoteBadge = ({ note, onRemove, theme }: { note: Note; onRemove: () => void; theme: 'dark' | 'light' }) => {
-  const isDark = theme === 'dark';
+const NoteBadge = ({ note, onRemove }: { note: Note; onRemove: () => void }) => {
   const initials = note.noteText
     .split(' ')
     .slice(0, 2)
@@ -37,21 +33,13 @@ const NoteBadge = ({ note, onRemove, theme }: { note: Note; onRemove: () => void
 
   return (
     <div 
-      className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors duration-300 ${
-        isDark 
-          ? 'bg-[#252525] text-[#FFFFFF] hover:bg-[#3A3A3A]' 
-          : 'bg-[#E0E0E0] text-[#000000] hover:bg-[#D0D0D0]'
-      }`}
+      className="badge badge-neutral gap-2"
       title={`${note.noteText} (${note.videoTitle})`}
     >
       <span>{initials}</span>
       <button 
         onClick={onRemove}
-        className={`ml-1 rounded-full p-0.5 transition-colors duration-300 ${
-          isDark 
-            ? 'hover:bg-[#3A3A3A]' 
-            : 'hover:bg-[#C0C0C0]'
-        }`}
+        className="btn btn-ghost btn-xs btn-circle"
       >
         <X className="w-3 h-3" />
       </button>
@@ -68,11 +56,9 @@ const Chat = () => {
   const [selectedNotes, setSelectedNotes] = useState<Note[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  
   const chatRef = useRef<any>(null);
-  const isDark = theme === 'dark';
 
-  const [suggestions, setSuggestions] = useState([
+  const [suggestions] = useState([
     { id: "1", text: "What is this video about?" },
     { id: "2", text: "Summarize the key points." },
     { id: "3", text: "What are the main topics discussed?" },
@@ -89,27 +75,21 @@ const Chat = () => {
     [messages]
   );
 
-  // Combine transcript and selected notes for context
   const contextWithNotes = useMemo(() => {
     let context = '';
-    
-    // Add transcript from store if available
     if (transcript) {
       context += `\n\nVideo Transcript:\n${transcript}\n`;
     }
-    
     if (selectedNotes.length > 0) {
       context += '\n\nAdditional context from notes:\n';
       selectedNotes.forEach((note, index) => {
         context += `\nNote ${index + 1}: "${note.noteText}" - from video "${note.videoTitle}" at ${note.timestamp}\n`;
       });
     }
-    
     return context;
   }, [selectedNotes, transcript]);
 
   useEffect(() => {
-    // Always recreate chat when context changes (transcript or notes)
     chatRef.current = ai.chats.create({
       model: "gemini-2.0-flash",
       history: memoizedHistory,
@@ -243,20 +223,15 @@ const Chat = () => {
   }, []);
 
   const handleResetChat = useCallback(() => {
-    // Clear messages in store
     resetMessages();
-    
-    // Clean up existing chat instance
     if (chatRef.current) {
       try {
-        // Attempt to clean up any resources
         chatRef.current = null;
       } catch (error) {
         console.error("Error cleaning up chat instance:", error);
       }
     }
     
-    // Create a new chat instance
     chatRef.current = ai.chats.create({
       model: "gemini-2.0-flash",
       history: [],
@@ -268,38 +243,18 @@ const Chat = () => {
       }
     });
     
-    // Clear selected notes
     setSelectedNotes([]);
   }, [ai, contextWithNotes, resetMessages]);
 
-  const scrollbarStyles = `
-    .hide-scrollbar::-webkit-scrollbar {
-      width: 0px;
-      background: transparent;
-    }
-    .hide-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  `;
-
   return (
-    <div className={`flex flex-col h-full transition-colors duration-300 ${isDark ? 'bg-[#0A0A0A] text-[#FFFFFF]' : 'bg-[#FFFFFF] text-[#000000]'} font-sans`}>
-      <style>{scrollbarStyles}</style>
-      
-      <div className={`px-4 py-2 flex justify-between items-center border-b transition-colors duration-300 ${
-        isDark ? 'border-[#252525] bg-[#101010]' : 'border-[#E0E0E0] bg-[#F5F5F5]'
-      }`}>
+    <div className="card h-full bg-base-100 shadow-xl">
+      <div className="card-header px-4 py-2 flex justify-between items-center border-b border-base-300">
         <div className="text-sm font-medium">
           {useStore.getState().currentVideoId ? 'Chat' : 'Chat (No video detected)'}
         </div>
         <button
           onClick={handleResetChat}
-          className={`p-1.5 rounded-sm flex items-center justify-center transition-colors duration-300 ${
-            isDark 
-              ? 'bg-[#252525] text-[#8E8E8E] hover:bg-[#3A3A3A] hover:text-[#FFFFFF]' 
-              : 'bg-[#E0E0E0] text-[#666666] hover:bg-[#D0D0D0] hover:text-[#000000]'
-          }`}
+          className="btn btn-ghost btn-sm btn-square"
           title="Reset chat"
         >
           <RefreshCw className="w-4 h-4" />
@@ -307,21 +262,18 @@ const Chat = () => {
       </div>
 
       {selectedNotes.length > 0 && (
-        <div className={`px-4 py-2 flex flex-wrap gap-1 border-b transition-colors duration-300 ${
-          isDark ? 'border-[#252525] bg-[#101010]' : 'border-[#E0E0E0] bg-[#F5F5F5]'
-        }`}>
+        <div className="px-4 py-2 flex flex-wrap gap-2 border-b border-base-300 bg-base-200">
           {selectedNotes.map(note => (
             <NoteBadge 
               key={note.id} 
               note={note} 
               onRemove={() => handleRemoveNote(note.id)}
-              theme={theme}
             />
           ))}
         </div>
       )}
       
-      <main className="flex-1 overflow-y-auto px-4 py-3 space-y-2 hide-scrollbar">
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
         {messages.map((msg, index) => (
           <BotMessage 
             key={`${index}-${msg.role}-${msg.text?.substring(0, 10) || 'empty'}`} 
@@ -331,9 +283,9 @@ const Chat = () => {
           />
         ))}
         <div ref={messagesEndRef} />
+      </div>
 
-      </main>
-      <footer className={`p-3 border-t transition-colors duration-300 ${isDark ? 'border-[#252525] bg-[#101010]' : 'border-[#E0E0E0] bg-[#F5F5F5]'}`}>
+      <div className="card-footer p-3 border-t border-base-300">
         {messages.length === 0 && (
           <SuggestionsCarousel 
             suggestions={suggestions} 
@@ -341,26 +293,17 @@ const Chat = () => {
             theme={theme}
           />
         )}
-        <div className="flex items-center gap-2">
+        <div className="join w-full">
           <button
-            className={`p-2 rounded-sm flex items-center justify-center transition-colors duration-300 ${
-              isDark 
-                ? 'bg-[#252525] text-[#8E8E8E] hover:bg-[#3A3A3A] hover:text-[#FFFFFF]' 
-                : 'bg-[#E0E0E0] text-[#666666] hover:bg-[#D0D0D0] hover:text-[#000000]'
-            }`}
+            className="btn btn-neutral join-item"
             onClick={() => setNoteSelectorOpen(true)}
             title="Add note to context"
-            style={{ width: '40px', height: '40px' }}
           >
             <BookOpen className="w-5 h-5" />
           </button>
           <textarea
             ref={inputRef}
-            className={`flex-1 px-3 py-2 rounded-sm border resize-none leading-snug focus:outline-none focus:ring-1 text-sm transition-colors duration-300 ${
-              isDark 
-                ? 'border-[#252525] bg-[#0A0A0A] text-[#FFFFFF] focus:ring-[#2B5DF5]' 
-                : 'border-[#D0D0D0] bg-[#FFFFFF] text-[#000000] focus:ring-[#2B5DF5]'
-            }`}
+            className="textarea textarea-bordered join-item flex-1 resize-none leading-snug focus:outline-none"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -369,16 +312,14 @@ const Chat = () => {
             style={{ height: '40px', minHeight: '40px' }}
           />
           <button
-            className={`px-4 py-2 h-[40px] bg-[#2B5DF5] text-white hover:bg-[#1E4AD1] disabled:text-[#8E8E8E] font-medium tracking-wide text-sm rounded-sm transition-colors duration-300 ${
-              isDark ? 'disabled:bg-[#252525]' : 'disabled:bg-[#D0D0D0]'
-            }`}
+            className="btn btn-primary join-item"
             onClick={sendMessage}
             disabled={isLoading}
           >
             {isLoading ? "Sending..." : "Send"}
           </button>
         </div>
-      </footer>
+      </div>
       
       <NoteSelector 
         isOpen={noteSelectorOpen} 

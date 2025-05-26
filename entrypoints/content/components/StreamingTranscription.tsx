@@ -49,18 +49,10 @@ const StreamingTranscription = ({ transcription, connected }: StreamingTranscrip
 
   return (
     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none" style={{ width: '320px' }}>
-      <div className={`p-4 rounded-lg backdrop-blur-md ${
-        isDark 
-          ? 'bg-black/60 text-white' 
-          : 'bg-white/60 text-black'
-      }`}>
+      <div className="card bg-base-100/60 backdrop-blur-md p-4">
         {/* Gradient fade at the start */}
-        <div className="absolute top-0 left-0 right-0 h-8 pointer-events-none z-10"
-             style={{
-               background: isDark 
-                 ? 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)'
-                 : 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 100%)'
-             }}
+        <div 
+          className="absolute top-0 left-0 right-0 h-8 pointer-events-none z-10 bg-gradient-to-b from-base-100/60 to-transparent"
         />
         
         {/* Current streaming text */}
@@ -90,7 +82,7 @@ const StreamingTranscription = ({ transcription, connected }: StreamingTranscrip
         
         {/* Placeholder when no transcription */}
         {!currentText && words.length === 0 && (
-          <div className={`${isDark ? 'text-gray-300' : 'text-gray-700'} relative z-0`}>
+          <div className="opacity-70 relative z-0">
             Listening for speech...
           </div>
         )}

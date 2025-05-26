@@ -11,9 +11,7 @@ interface SuggestionsCarouselProps {
   theme: 'dark' | 'light';
 }
 
-const SuggestionsCarousel: React.FC<SuggestionsCarouselProps> = ({ suggestions, onSuggestionClick, theme }) => {
-  const isDark = theme === 'dark';
-
+const SuggestionsCarousel: React.FC<SuggestionsCarouselProps> = ({ suggestions, onSuggestionClick }) => {
   if (!suggestions.length) {
     return null;
   }
@@ -36,11 +34,7 @@ const SuggestionsCarousel: React.FC<SuggestionsCarouselProps> = ({ suggestions, 
             <button
               key={`${suggestion.id}-${index}`}
               onClick={() => onSuggestionClick(suggestion.text)}
-              className={`mx-2 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 whitespace-nowrap ${
-                isDark
-                  ? 'bg-[#252525] text-[#FFFFFF] hover:bg-[#3A3A3A]'
-                  : 'bg-[#E0E0E0] text-[#000000] hover:bg-[#D0D0D0]'
-              }`}
+              className="btn btn-sm btn-outline mx-2 whitespace-nowrap"
             >
               {suggestion.text}
             </button>
@@ -51,7 +45,7 @@ const SuggestionsCarousel: React.FC<SuggestionsCarouselProps> = ({ suggestions, 
   };
 
   return (
-    <div className={`flex flex-col items-center justify-center py-4 px-6 space-y-2`}>
+    <div className="flex flex-col items-center justify-center py-4 px-6 space-y-2">
       {renderRow(row1Suggestions, 'left')}
       {row2Suggestions.length > 0 && renderRow(row2Suggestions, 'right')}
       <style>{`

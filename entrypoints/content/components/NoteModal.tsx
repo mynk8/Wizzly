@@ -9,7 +9,6 @@ interface NoteModalProps {
 }
 
 const NoteModal = ({ isOpen, onClose }: NoteModalProps) => {
-  const { theme } = useStore();
   const { addNote, lastUsedTopic } = useNotesStore();
   const inputRef = useRef<HTMLDivElement>(null);
   
@@ -126,100 +125,67 @@ const NoteModal = ({ isOpen, onClose }: NoteModalProps) => {
   if (!isOpen) return null;
 
   return (
-    <div ref={inputRef} className="fixed inset-0 flex items-center justify-center z-50">
-      <div 
-        className="absolute inset-0 bg-black opacity-50" 
-        onClick={onClose}
-      />
-      <div 
-        className={`relative w-full max-w-md p-6 rounded-lg shadow-lg transition-colors duration-300 ${
-          theme === 'dark' 
-            ? 'bg-[#101010] text-[#FFFFFF] border border-[#252525]' 
-            : 'bg-[#F5F5F5] text-[#000000] border border-[#D0D0D0]'
-        }`}
-      >
+    <dialog open className="modal modal-open">
+      <div className="modal-backdrop" onClick={onClose} />
+      <div ref={inputRef} className="modal-box relative w-full max-w-md">
         <button 
           onClick={onClose}
-          className={`absolute top-4 right-4 p-1 rounded-full transition-colors duration-300 ${
-            theme === 'dark'
-              ? 'hover:bg-[#252525]'
-              : 'hover:bg-[#E0E0E0]'
-          }`}
+          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
         >
-          <X className={`w-4 h-4 ${theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'}`} />
+          <X className="w-4 h-4" />
         </button>
         
         <h2 className="text-lg font-medium mb-4">Take Note</h2>
         
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+          <div className="form-control mb-4">
             {screenshot ? (
-              <div className="relative rounded overflow-hidden">
+              <div className="relative rounded-box overflow-hidden">
                 <img 
                   src={screenshot} 
                   alt="Video screenshot" 
                   className="w-full h-auto object-cover" 
                   style={{ maxHeight: '200px' }}
                 />
-                <div className="absolute top-2 right-2 bg-green-500 text-white p-1 rounded-full">
+                <div className="badge badge-success absolute top-2 right-2">
                   <Check className="w-4 h-4" />
                 </div>
                 <button
                   type="button"
                   onClick={captureScreenshot}
-                  className={`absolute bottom-2 right-2 p-2 rounded ${
-                    theme === 'dark'
-                      ? 'bg-[#252525] text-[#FFFFFF] hover:bg-[#3A3A3A]'
-                      : 'bg-[#E0E0E0] text-[#000000] hover:bg-[#D0D0D0]'
-                  }`}
+                  className="btn btn-circle btn-sm absolute bottom-2 right-2"
                   title="Recapture screenshot"
                 >
                   <Camera className="w-4 h-4" />
                 </button>
               </div>
             ) : screenshotLoading ? (
-              <div className={`p-4 text-center rounded flex flex-col items-center justify-center ${
-                theme === 'dark' 
-                  ? 'bg-[#1A1A1A]' 
-                  : 'bg-[#E0E0E0]'
-              }`} style={{ height: '150px' }}>
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"></div>
-                <p>Capturing screenshot...</p>
+              <div className="card bg-base-200 p-4 text-center flex flex-col items-center justify-center min-h-[150px]">
+                <span className="loading loading-spinner loading-md"></span>
+                <p className="mt-2">Capturing screenshot...</p>
               </div>
             ) : (
-              <div className={`p-4 rounded ${
-                theme === 'dark' 
-                  ? 'bg-[#1A1A1A]' 
-                  : 'bg-[#E0E0E0]'
-              }`} style={{ minHeight: '100px' }}>
+              <div className="card bg-base-200 p-4 min-h-[100px]">
                 {screenshotError ? (
                   <div className="flex flex-col items-center text-center">
-                    <AlertCircle className={`w-8 h-8 mb-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />
+                    <AlertCircle className="w-8 h-8 mb-2 text-error" />
                     <p className="mb-2">{screenshotError}</p>
                     <button
                       type="button"
                       onClick={captureScreenshot}
-                      className={`px-3 py-1 rounded text-sm ${
-                        theme === 'dark'
-                          ? 'bg-[#252525] text-[#FFFFFF] hover:bg-[#3A3A3A]'
-                          : 'bg-[#D0D0D0] text-[#000000] hover:bg-[#C0C0C0]'
-                      }`}
+                      className="btn btn-sm"
                     >
                       Try Again
                     </button>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center text-center">
-                    <Camera className={`w-8 h-8 mb-2 ${theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'}`} />
+                    <Camera className="w-8 h-8 mb-2 opacity-70" />
                     <p className="mb-2">No screenshot captured yet.</p>
                     <button
                       type="button"
                       onClick={captureScreenshot}
-                      className={`px-3 py-1 rounded text-sm ${
-                        theme === 'dark'
-                          ? 'bg-[#252525] text-[#FFFFFF] hover:bg-[#3A3A3A]'
-                          : 'bg-[#D0D0D0] text-[#000000] hover:bg-[#C0C0C0]'
-                      }`}
+                      className="btn btn-sm"
                     >
                       Capture Screenshot
                     </button>
@@ -229,89 +195,61 @@ const NoteModal = ({ isOpen, onClose }: NoteModalProps) => {
             )}
           </div>
           
-          <div className="mb-4">
-            <label 
-              htmlFor="topic" 
-              className={`block mb-1 text-sm font-medium ${
-                theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'
-              }`}
-            >
-              Topic
+          <div className="form-control mb-4">
+            <label className="label">
+              <span className="label-text">Topic</span>
             </label>
             <input
-              id="topic"
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="e.g. Calculus"
-              className={`w-full p-2 rounded border transition-colors duration-300 ${
-                theme === 'dark'
-                  ? 'bg-[#1A1A1A] border-[#252525] text-[#FFFFFF] focus:border-[#3A3A3A]'
-                  : 'bg-[#FFFFFF] border-[#D0D0D0] text-[#000000] focus:border-[#A0A0A0]'
-              }`}
+              className="input input-bordered w-full"
               required
             />
           </div>
           
-          <div className="mb-4">
-            <label 
-              htmlFor="noteText" 
-              className={`block mb-1 text-sm font-medium ${
-                theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'
-              }`}
-            >
-              Note
+          <div className="form-control mb-4">
+            <label className="label">
+              <span className="label-text">Note</span>
             </label>
             <textarea
-              id="noteText"
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
               placeholder="Your note here..."
               rows={4}
-              className={`w-full p-2 rounded border transition-colors duration-300 ${
-                theme === 'dark'
-                  ? 'bg-[#1A1A1A] border-[#252525] text-[#FFFFFF] focus:border-[#3A3A3A]'
-                  : 'bg-[#FFFFFF] border-[#D0D0D0] text-[#000000] focus:border-[#A0A0A0]'
-              }`}
+              className="textarea textarea-bordered w-full"
               required
             />
           </div>
           
-          <div className="mb-4">
-            <p className={`text-sm ${theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'}`}>
+          <div className="mb-4 space-y-1 opacity-70">
+            <p className="text-sm">
               <strong>Video:</strong> {videoTitle}
             </p>
-            <p className={`text-sm ${theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'}`}>
+            <p className="text-sm">
               <strong>Timestamp:</strong> {timestamp}
             </p>
           </div>
           
-          <div className="flex justify-end">
+          <div className="modal-action">
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2 mr-2 rounded text-sm transition-colors duration-300 ${
-                theme === 'dark'
-                  ? 'bg-[#252525] text-[#FFFFFF] hover:bg-[#3A3A3A]'
-                  : 'bg-[#E0E0E0] text-[#000000] hover:bg-[#D0D0D0]'
-              }`}
+              className="btn btn-ghost"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className={`px-4 py-2 rounded text-sm font-medium transition-colors duration-300 ${
-                theme === 'dark'
-                  ? 'bg-[#0070F3] text-white hover:bg-[#0060D9]'
-                  : 'bg-[#0070F3] text-white hover:bg-[#0060D9]'
-              }`}
+              className="btn btn-primary"
             >
               Save Note
             </button>
           </div>
         </form>
       </div>
-    </div>
+    </dialog>
   );
 };
 

@@ -10,7 +10,6 @@ interface NoteSelectorProps {
 }
 
 const NoteSelector = ({ isOpen, onClose, onSelectNote }: NoteSelectorProps) => {
-  const { theme } = useStore();
   const { notes, getNotesByTopic } = useNotesStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
@@ -39,90 +38,56 @@ const NoteSelector = ({ isOpen, onClose, onSelectNote }: NoteSelectorProps) => {
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div 
-        className="absolute inset-0 bg-black bg-opacity-50" 
-        onClick={onClose}
-      />
-      <div 
-        className={`relative w-full max-w-md max-h-[80vh] flex flex-col rounded-lg shadow-lg transition-colors duration-300 ${
-          theme === 'dark' 
-            ? 'bg-[#101010] text-[#FFFFFF] border border-[#252525]' 
-            : 'bg-[#F5F5F5] text-[#000000] border border-[#D0D0D0]'
-        }`}
-      >
-        <div className="flex justify-between items-center p-4 border-b transition-colors duration-300 ${
-          theme === 'dark' ? 'border-[#252525]' : 'border-[#E0E0E0]'
-        }">
+    <dialog open className="modal modal-open">
+      <div className="modal-backdrop bg-black/50" onClick={onClose} />
+      <div className="modal-box w-full max-w-md max-h-[80vh] flex flex-col">
+        <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Select Note for Context</h2>
           <button 
             onClick={onClose}
-            className={`p-1 rounded-full transition-colors duration-300 ${
-              theme === 'dark'
-                ? 'hover:bg-[#252525]'
-                : 'hover:bg-[#E0E0E0]'
-            }`}
+            className="btn btn-ghost btn-sm btn-circle"
           >
-            <X className={`w-4 h-4 ${theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'}`} />
+            <X className="w-4 h-4" />
           </button>
         </div>
         
-        <div className="p-4 border-b transition-colors duration-300 ${
-          theme === 'dark' ? 'border-[#252525]' : 'border-[#E0E0E0]'
-        }">
-          <div className={`flex items-center px-3 py-2 rounded border transition-colors duration-300 ${
-            theme === 'dark'
-              ? 'bg-[#1A1A1A] border-[#252525] focus-within:border-[#3A3A3A]'
-              : 'bg-[#FFFFFF] border-[#D0D0D0] focus-within:border-[#A0A0A0]'
-          }`}>
-            <Search className={`w-4 h-4 mr-2 ${theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'}`} />
+        <div className="form-control mb-4">
+          <div className="input-group">
+            <span className="btn btn-square btn-ghost">
+              <Search className="w-4 h-4" />
+            </span>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search notes..."
-              className={`w-full bg-transparent border-none focus:outline-none text-sm ${
-                theme === 'dark' ? 'text-[#FFFFFF]' : 'text-[#000000]'
-              }`}
+              className="input input-bordered w-full"
             />
           </div>
         </div>
         
         <div className="overflow-y-auto flex-1">
           {notes.length === 0 ? (
-            <div className={`p-6 text-center ${theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'}`}>
+            <div className="text-center opacity-70 p-6">
               No notes available. Create some notes first.
             </div>
           ) : filteredTopics.length === 0 ? (
-            <div className={`p-6 text-center ${theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'}`}>
+            <div className="text-center opacity-70 p-6">
               No notes match your search.
             </div>
           ) : (
-            filteredTopics.map(topic => (
-              <div 
-                key={topic}
-                className={`border-b transition-colors duration-300 ${
-                  theme === 'dark' ? 'border-[#252525]' : 'border-[#E0E0E0]'
-                }`}
-              >
-                <div 
-                  className={`flex justify-between items-center px-4 py-3 cursor-pointer transition-colors duration-300 ${
-                    theme === 'dark'
-                      ? 'hover:bg-[#151515]'
-                      : 'hover:bg-[#E8E8E8]'
-                  }`}
-                  onClick={() => toggleTopic(topic)}
-                >
-                  <h3 className="font-medium">
-                    {topic} <span className="text-sm font-normal">({notesByTopic[topic].length})</span>
-                  </h3>
-                  <span className={`text-xs ${theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'}`}>
-                    {expandedTopics[topic] ? 'Hide' : 'Show'}
-                  </span>
-                </div>
-                
-                {expandedTopics[topic] && (
-                  <div>
+            <div className="menu menu-lg w-full p-0">
+              {filteredTopics.map(topic => (
+                <div key={topic} className="collapse collapse-arrow border-b">
+                  <input 
+                    type="checkbox" 
+                    checked={expandedTopics[topic]} 
+                    onChange={() => toggleTopic(topic)}
+                  />
+                  <div className="collapse-title font-medium">
+                    {topic} <span className="text-sm font-normal opacity-70">({notesByTopic[topic].length})</span>
+                  </div>
+                  <div className="collapse-content p-0">
                     {notesByTopic[topic]
                       .filter(note => 
                         !searchTerm || 
@@ -132,34 +97,30 @@ const NoteSelector = ({ isOpen, onClose, onSelectNote }: NoteSelectorProps) => {
                       .map(note => (
                         <div 
                           key={note.id}
-                          className={`px-4 py-3 border-t cursor-pointer transition-colors duration-300 ${
-                            theme === 'dark' 
-                              ? 'border-[#252525] hover:bg-[#151515]' 
-                              : 'border-[#E0E0E0] hover:bg-[#E8E8E8]'
-                          }`}
                           onClick={() => onSelectNote(note)}
+                          className="p-4 hover:bg-base-200 cursor-pointer border-t"
                         >
                           <div className="flex justify-between items-start mb-1">
                             <h4 className="text-sm font-medium truncate max-w-[70%]">
                               {note.videoTitle}
                             </h4>
-                            <span className={`text-xs ${theme === 'dark' ? 'text-[#8E8E8E]' : 'text-[#666666]'}`}>
+                            <span className="text-xs opacity-70">
                               {note.timestamp}
                             </span>
                           </div>
-                          <p className={`text-sm line-clamp-2 ${theme === 'dark' ? 'text-[#DDDDDD]' : 'text-[#333333]'}`}>
+                          <p className="text-sm line-clamp-2 opacity-90">
                             {note.noteText}
                           </p>
                         </div>
                       ))}
                   </div>
-                )}
-              </div>
-            ))
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 
