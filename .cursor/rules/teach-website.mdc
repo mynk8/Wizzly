@@ -1,0 +1,42 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Teach Website - Separate Application
+
+## Overview
+
+The `entrypoints/teach/` directory contains a **completely separate website** that should be treated as an independent application from the main browser extension project.
+
+## Key Characteristics
+
+- **Standalone Website**: The teach folder is NOT part of the browser extension
+- **Independent Entry Point**: Has its own [index.html](mdc:entrypoints/teach/index.html), [main.tsx](mdc:entrypoints/teach/main.tsx), and [App.tsx](mdc:entrypoints/teach/App.tsx)
+- **Separate Styling**: Uses its own [style.css](mdc:entrypoints/teach/style.css) with Tailwind CSS and DaisyUI
+- **Different Purpose**: Serves a different function than the browser extension
+
+## Development Approach
+
+When working with the teach folder:
+- Treat it as a completely separate React application
+- Don't assume it shares state, components, or functionality with the main extension
+- Consider it has its own build process and deployment pipeline
+- Apply web development best practices as if it were a standalone project
+
+## File Structure
+
+```
+entrypoints/teach/
+├── index.html      # HTML entry point
+├── main.tsx        # React application bootstrap
+├── App.tsx         # Main React component
+└── style.css       # Tailwind + DaisyUI styling
+```
+
+## Important Notes
+
+- This is NOT a browser extension component
+- This is NOT related to the content scripts or extension settings
+- This should be developed and maintained separately from the main extension codebase
+- Changes here don't affect the browser extension functionality

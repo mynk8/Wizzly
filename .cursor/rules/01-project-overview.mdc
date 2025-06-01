@@ -7,15 +7,34 @@ alwaysApply: false
 
 This is a browser extension built with React, TypeScript, and WXT that provides AI-powered assistance for YouTube videos. The extension uses Google's Gemini AI for processing video transcripts and answering user questions.
 
+## Key Features
+- **AI Chat**: Text-based conversations about YouTube video content using Google Gemini
+- **Voice Interaction**: Real-time voice conversations with AI using Google Live API
+- **Note Taking**: Capture notes with video screenshots and timestamps
+- **Transcript Analysis**: Automatic extraction and processing of YouTube video transcripts
+- **Multi-mode Interface**: Switch between chat, voice, and notes modes
+- **Theme Support**: Dark and light theme options
+- **PDF Export**: Export notes individually, by topic, or all at once
+
 ## Key Entry Points
 - Main application: [entrypoints/content/App.tsx](mdc:entrypoints/content/App.tsx)
+- Content script: [entrypoints/content/index.tsx](mdc:entrypoints/content/index.tsx)
 - Extension configuration: [wxt.config.ts](mdc:wxt.config.ts)
 - Project configuration: [package.json](mdc:package.json)
 
 ## Core Technologies
-- React 18.3.1 for UI components
-- TypeScript 5.8.2 for type safety
-- Tailwind CSS with DaisyUI for styling
-- WXT for browser extension development
-- Zustand for state management
-- Google Generative AI for content processing
+- **React 19.1.0** for UI components
+- **TypeScript 5.8.3** for type safety
+- **Tailwind CSS 4.1.7** for styling with custom design system
+- **WXT 0.20.6** for browser extension development
+- **Zustand 5.0.5** for state management
+- **Google Generative AI 1.0.1** for content processing
+- **Framer Motion 12.12.1** for animations
+- **Dexie 3.2.4** for local database management
+
+## Architecture Highlights
+- **Shadow DOM**: Isolated UI injection to prevent conflicts with YouTube
+- **Content Script**: Runs on all web pages with YouTube-specific functionality
+- **Multi-browser Support**: Chrome and Firefox compatibility
+- **Real-time Communication**: WebSocket integration for live AI interactions
+- **Local Storage**: Persistent note storage with topic organization

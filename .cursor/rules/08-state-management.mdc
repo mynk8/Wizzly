@@ -3,3 +3,103 @@ description:
 globs:
 alwaysApply: false
 ---
+# State Management Guide
+
+## Zustand Stores
+
+### Main Application Store
+- **File**: [store/store.ts](mdc:entrypoints/store/store.ts)
+- **Purpose**: Global application state management
+- **Key State**:
+  - `mode`: Current application mode ('chat' | 'voice' | 'notes')
+  - `theme`: UI theme ('dark' | 'light')
+  - Application-wide settings and preferences
+
+### Notes Store
+- **File**: [content/store/notesStore.ts](mdc:entrypoints/content/store/notesStore.ts)
+- **Purpose**: Note-taking functionality and data persistence
+- **Key Features**:
+  - Note creation and management
+  - Topic organization
+  - PDF export functionality
+  - Local storage persistence
+  - Screenshot handling
+
+## State Patterns
+
+### Store Structure
+```typescript
+interface Store {
+  // State properties
+  mode: 'chat' | 'voice' | 'notes';
+  theme: 'dark' | 'light';
+  
+  // Actions
+  setMode: (mode: string) => void;
+  toggleTheme: () => void;
+}
+```
+
+### Notes Data Model
+```typescript
+interface Note {
+  id: string;
+  topic: string;
+  noteText: string;
+  videoTitle: string;
+  videoUrl: string;
+  timestamp: string;
+  screenshot?: string;
+  createdAt: number;
+}
+```
+
+## Context Providers
+
+### Live API Context
+- **File**: [contexts/LiveAPIContext.tsx](mdc:entrypoints/contexts/LiveAPIContext.tsx)
+- **Purpose**: Manage Google Live API connection state
+- **Provides**: WebSocket connection, audio handling, real-time communication
+
+### Chat API Context
+- **File**: [contexts/ChatAPIContext.tsx](mdc:entrypoints/contexts/ChatAPIContext.tsx)
+- **Purpose**: Manage chat-based AI interactions
+- **Provides**: Message history, API communication, response handling
+
+## Data Persistence
+
+### Local Storage
+- Notes are persisted using browser's local storage
+- Automatic save on note creation/modification
+- Topic preferences and last used settings
+
+### Browser Extension Storage
+- API keys and sensitive configuration
+- User preferences and settings
+- Cross-session state persistence
+
+## Development Guidelines
+
+### Store Creation
+- Use Zustand for global state management
+- Keep stores focused on specific domains
+- Implement proper TypeScript interfaces
+- Use immer for complex state updates when needed
+
+### State Updates
+- Always use store actions for state modifications
+- Avoid direct state mutation
+- Implement optimistic updates where appropriate
+- Handle async operations properly
+
+### Performance Considerations
+- Use selectors to prevent unnecessary re-renders
+- Implement proper memoization for expensive computations
+- Consider state normalization for complex data structures
+- Use shallow comparison for object updates
+
+### Testing State
+- Mock stores for component testing
+- Test state transitions and side effects
+- Validate persistence mechanisms
+- Test error scenarios and recovery

@@ -79,7 +79,7 @@ function startObserving() {
 }
 
 export default defineContentScript({
-  matches: ["*://*/*"],
+  matches: ["*://www.youtube.com/*", "*://youtube.com/*"],
   cssInjectionMode: "ui",
 
   async main(ctx) {

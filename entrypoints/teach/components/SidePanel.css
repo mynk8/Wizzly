@@ -1,0 +1,100 @@
+/* SidePanel.css */
+
+/* Base styles for the panel */
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+/* Mobile optimized view styles */
+.mobile-optimized-view {
+  overflow-y: auto;
+}
+
+.mobile-optimized-view .card {
+  transition: all 0.2s ease;
+}
+
+.mobile-optimized-view .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Responsive grid layouts for mobile view */
+.mobile-optimized-view .resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+/* Make form controls more touch-friendly in mobile view */
+.mobile-optimized-view .input,
+.mobile-optimized-view .select,
+.mobile-optimized-view .textarea,
+.mobile-optimized-view .btn {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.7rem;
+}
+
+/* Card styles for mobile optimized view */
+.mobile-optimized-view .card .card-body {
+  padding: 0.75rem;
+}
+
+/* Truncate long text in mobile view */
+.mobile-optimized-view .truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Styling for notification banner */
+.notification-banner {
+  background: linear-gradient(to right, #f8f9fa, #e9ecef);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #4b86b4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* Animation for full screen toggle */
+@keyframes expandIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.expand-animation {
+  animation: expandIn 0.3s ease-out forwards;
+}
+
+/* Transition for panel resizing */
+.panel-transition {
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+/* Highlight for expandable panels */
+.expandable-panel {
+  position: relative;
+}
+
+.expandable-panel:after {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #63b3ed;
+  border-radius: 50%;
+  opacity: 0.7;
+} 

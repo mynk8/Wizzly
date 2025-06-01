@@ -3,3 +3,28 @@ description:
 globs:
 alwaysApply: false
 ---
+# Project Overview
+
+This is a web extension built using WXT and React.
+
+## Key Files and Directories:
+
+*   **Configuration:**
+    *   `wxt.config.ts`: ([wxt.config.ts](mdc:wxt.config.ts)) - Main configuration for the WXT build system.
+    *   `package.json`: ([package.json](mdc:package.json)) - Project dependencies and scripts.
+    *   `tsconfig.json`: ([tsconfig.json](mdc:tsconfig.json)) - TypeScript configuration.
+*   **Entrypoints:**
+    *   `entrypoints/`: ([entrypoints/](mdc:entrypoints/)) - Contains the core logic for different parts of the extension.
+        *   `entrypoints/content/index.tsx`: ([entrypoints/content/index.tsx](mdc:entrypoints/content/index.tsx)) - Likely the main content script.
+        *   `entrypoints/content/App.tsx`: ([entrypoints/content/App.tsx](mdc:entrypoints/content/App.tsx)) - The main React component for the content script UI.
+*   **Public Assets:**
+    *   `public/`: ([public/](mdc:public/)) - Static assets for the extension.
+*   **Components:**
+    *   `components.json`: ([components.json](mdc:components.json)) - Possibly related to a UI component library (e.g., ShadCN).
+*   **Assets:**
+    *   `assets/`: ([assets/](mdc:assets/)) - Other project assets.
+
+## Development Notes:
+
+*   The project uses `pnpm` for package management (see `pnpm-lock.yaml` ([pnpm-lock.yaml](mdc:pnpm-lock.yaml))).
+*   Tailwind CSS is used for styling (see `tailwind.config.ts` ([tailwind.config.ts](mdc:tailwind.config.ts))).

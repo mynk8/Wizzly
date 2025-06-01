@@ -7,6 +7,6 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   // @ts-ignore
   vite: () => ({
-    plugins: [react(), tailwindcss()],
+    plugins: [tailwindcss()],
   })
 });

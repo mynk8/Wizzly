@@ -3,3 +3,126 @@ description:
 globs:
 alwaysApply: false
 ---
+# Utility Functions Guide
+
+## Core Utilities
+
+### Audio Context Management
+- **File**: [lib/utils.ts](mdc:entrypoints/lib/utils.ts)
+- **Function**: `audioContext(options?: GetAudioContextOptions)`
+- **Purpose**: Manages Web Audio API context creation with user interaction handling
+- **Features**:
+  - Automatic user interaction detection
+  - Context reuse with ID-based mapping
+  - Graceful fallback for audio permission issues
+
+### YouTube Controls
+- **File**: [lib/youtubeControls.ts](mdc:entrypoints/lib/youtubeControls.ts)
+- **Functions**:
+  - `pauseYouTubeVideo()`: Pause current YouTube video
+  - Video element detection and control
+- **Return Type**: `YouTubeControlResult` with success status and messages
+
+### Screenshot Utilities
+- **Location**: [content/components/NoteModal.tsx](mdc:entrypoints/content/components/NoteModal.tsx)
+- **Function**: `captureVideoScreenshot()`
+- **Purpose**: Capture current video frame for note-taking
+- **Implementation**: Canvas-based frame extraction from video element
+
+## PDF Generation
+
+### Note Export Functions
+- **File**: [content/store/notesStore.ts](mdc:entrypoints/content/store/notesStore.ts)
+- **Functions**:
+  - `generateNotePDF(note: Note)`: Export single note to PDF
+  - `generateTopicPDF(topicName: string, notes: Note[])`: Export topic notes to PDF
+  - `generateAllNotesPDF(notesByTopic: Record<string, Note[]>)`: Export all notes to PDF
+
+### PDF Styling
+- Embedded CSS for print-friendly formatting
+- Responsive layout for different paper sizes
+- Image handling for screenshots
+- Proper typography and spacing
+
+## Data Processing
+
+### Transcript Processing
+- **Location**: [content/index.tsx](mdc:entrypoints/content/index.tsx)
+- **Functions**:
+  - `extractTranscript()`: Parse YouTube transcript segments
+  - `extractVideoId()`: Extract video ID from URL
+  - Text cleaning and timestamp formatting
+
+### Note Management
+- **Store**: [content/store/notesStore.ts](mdc:entrypoints/content/store/notesStore.ts)
+- **Features**:
+  - Topic-based organization
+  - Search and filtering
+  - Bulk operations
+  - Data validation
+
+## UI Utilities
+
+### Class Name Management
+- **Library**: `clsx` and `tailwind-merge`
+- **Usage**: Conditional class names and Tailwind CSS optimization
+- **Pattern**: `cn()` utility function for combining classes
+
+### Animation Utilities
+- **Library**: `framer-motion`
+- **Usage**: Smooth transitions and micro-interactions
+- **Components**: Modal animations, button hover effects
+
+### Icon Management
+- **Library**: `lucide-react`
+- **Usage**: Consistent icon system throughout the application
+- **Pattern**: Import specific icons to optimize bundle size
+
+## Development Utilities
+
+### Type Definitions
+- Comprehensive TypeScript interfaces for all data structures
+- Proper typing for external APIs and browser extension APIs
+- Generic types for reusable components
+
+### Error Handling
+- Consistent error handling patterns across utilities
+- Graceful degradation for missing features
+- User-friendly error messages
+
+### Performance Optimization
+- Memoization for expensive operations
+- Debouncing for user input
+- Lazy loading for heavy components
+
+## Testing Utilities
+
+### Mock Functions
+- Mock implementations for browser APIs
+- Test data generators for notes and transcripts
+- Utility functions for component testing
+
+### Validation Helpers
+- Input validation for forms
+- Data structure validation
+- API response validation
+
+## Development Guidelines
+
+### Utility Creation
+- Keep functions pure when possible
+- Implement proper error handling
+- Add comprehensive TypeScript types
+- Include JSDoc documentation
+
+### Performance Considerations
+- Avoid unnecessary re-computations
+- Use appropriate data structures
+- Implement caching where beneficial
+- Consider memory usage for large datasets
+
+### Testing
+- Write unit tests for utility functions
+- Test edge cases and error scenarios
+- Validate performance characteristics
+- Mock external dependencies properly

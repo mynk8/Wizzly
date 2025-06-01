@@ -1,0 +1,19 @@
+@import '@tldraw/tldraw/tldraw.css';
+
+/* Custom tldraw overrides */
+.tl-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Make sure tldraw canvas is transparent when needed */
+.tl-canvas {
+  background: transparent !important;
+}
+
+/* Floating toolbar styles */
+.floating-toolbar {
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+} 

@@ -3,3 +3,72 @@ description:
 globs:
 alwaysApply: false
 ---
+# API Integration Guide
+
+## Google Gemini AI Integration
+
+### Chat API
+- **Provider**: [ChatAPIContext.tsx](mdc:entrypoints/contexts/ChatAPIContext.tsx)
+- **Usage**: Text-based conversations with AI about YouTube video content
+- **Key Features**: 
+  - Video transcript analysis
+  - Question answering about video content
+  - Context-aware responses
+
+### Live API (Voice)
+- **Provider**: [LiveAPIContext.tsx](mdc:entrypoints/contexts/LiveAPIContext.tsx)
+- **Usage**: Real-time voice interactions
+- **WebSocket Endpoint**: `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`
+- **Key Features**:
+  - Real-time voice transcription
+  - Voice-to-text conversion
+  - Streaming responses
+
+## YouTube Integration
+
+### Video Controls
+- **File**: [lib/youtubeControls.ts](mdc:entrypoints/lib/youtubeControls.ts)
+- **Functions**:
+  - `pauseYouTubeVideo()`: Pause current video
+  - Video element detection and control
+
+### Transcript Extraction
+- **Location**: [content/index.tsx](mdc:entrypoints/content/index.tsx)
+- **Functions**:
+  - `extractTranscript()`: Extract video transcript segments
+  - `extractVideoId()`: Get current video ID
+  - `openTranscriptPanel()`: Automatically open transcript panel
+
+### Screenshot Capture
+- **Usage**: Capture video frames for note-taking
+- **Implementation**: Canvas-based video frame extraction
+- **Error Handling**: Graceful fallback when video is paused or unavailable
+
+## API Configuration
+
+### Environment Setup
+- API keys should be configured in the extension settings
+- Default host: `generativelanguage.googleapis.com`
+- Supports both development and production environments
+
+### Error Handling
+- Implement proper error boundaries for API failures
+- Graceful degradation when services are unavailable
+- User-friendly error messages for common issues
+
+## Development Guidelines
+
+### API Key Management
+- Never hardcode API keys in source code
+- Use browser extension storage for secure key management
+- Implement proper validation for API key format
+
+### Rate Limiting
+- Implement appropriate delays between API calls
+- Handle rate limit responses gracefully
+- Cache responses when appropriate to reduce API usage
+
+### Testing
+- Mock API responses for development
+- Test error scenarios and edge cases
+- Validate API integration in different browser environments
