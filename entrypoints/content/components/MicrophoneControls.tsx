@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, memo } from "react";
 import { AudioRecorder } from "@/entrypoints/lib/audio-recorder.ts";
 import { useLiveAPIContext } from "@/entrypoints/contexts/LiveAPIContext.tsx";
@@ -76,12 +77,12 @@ const Speak = () => {
   `;
 
   return (
-    <div className={`card bg-base-100 flex flex-col flex-1 justify-end items-center overflow-y-hidden h-[480px] py-4 transition-colors duration-300 ${isDark ? 'bg-[#0A0A0A]' : 'bg-[#FFFFFF]'}`}>
+    <div className={`flex flex-col flex-1 justify-end items-center overflow-y-hidden h-[480px] py-4 transition-colors duration-300 ${isDark ? 'bg-[#0A0A0A]' : 'bg-[#FFFFFF]'}`}>
       <style>{scrollbarStyles}</style>
       <div className="relative w-full flex-1 flex justify-center items-center overflow-hidden p-4 hide-scrollbar">
         <img
             src={isPlaying ? gif : image}
-            className="w-auto h-auto object-contain rounded-lg"
+            className="w-auto h-auto object-contain rounded-md"
             style={{ maxHeight: "320px", maxWidth: "100%" }}
             alt={isPlaying ? "Wizzly talking animation" : "Wizzly static image"}
         />
@@ -95,33 +96,39 @@ const Speak = () => {
       <div className="flex gap-3 mt-6 mb-3">
         <button
           ref={connectButtonRef as any}
-          className={`btn btn-primary ${connected ? 'btn-outline' : ''}`}
+          className="bg-[#2B5DF5] text-white px-5 py-2 rounded-sm focus:outline-none hover:bg-[#1E4AD1] transition-colors"
           onClick={connected ? disconnect : connect}
+          style={{ height: '42px' }}
         >
           {connected ? 
-            <>
+            <div className="flex items-center gap-2">
               <Pause className="w-4 h-4" />
-              <span>Stop</span>
-            </> : 
-            <>
+              <span className="text-sm font-medium">Stop</span>
+            </div> : 
+            <div className="flex items-center gap-2">
               <Play className="w-4 h-4" />
-              <span>Start</span>
-            </>
+              <span className="text-sm font-medium">Start</span>
+            </div>
           }
         </button>
         <button
           onClick={() => setMuted(!muted)}
-          className={`btn ${muted ? 'btn-neutral' : 'btn-error'}`}
+          className={`px-5 py-2 rounded-sm focus:outline-none transition-colors flex items-center gap-2 ${
+            muted 
+              ? `${isDark ? 'bg-[#252525] text-[#FFFFFF] hover:bg-[#333333]' : 'bg-[#EBEBEB] text-[#000000] hover:bg-[#D0D0D0]'}` 
+              : "bg-[#F53B3B] text-white hover:bg-[#D72F2F]"
+          }`}
+          style={{ height: '42px' }}
           disabled={!connected}
         >
           {muted ? 
             <>
               <MicOff className="w-4 h-4" />
-              <span>Unmute</span>
+              <span className="text-sm font-medium">Unmute</span>
             </> : 
             <>
               <Mic className="w-4 h-4" />
-              <span>Mute</span>
+              <span className="text-sm font-medium">Mute</span>
             </>
           }
         </button>
