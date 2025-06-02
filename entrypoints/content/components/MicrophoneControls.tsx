@@ -19,7 +19,6 @@ const Speak = () => {
 
   const { client, connect, connected, disconnect, volume, outputTranscription, setConfig } = useLiveAPIContext();
 
-  // Update configuration with transcript when it changes
   useEffect(() => {
     const systemPrompt = transcript 
       ? `You are a helpful voice assistant. Please answer questions about the YouTube video using this transcript: ${transcript}`
@@ -37,7 +36,6 @@ const Speak = () => {
     }
   }, [connected]);
 
-  // Update isPlaying state based on connection and muting status
   useEffect(() => {
     setIsPlaying(connected && !muted);
   }, [connected, muted]);
@@ -64,7 +62,6 @@ const Speak = () => {
     };
   }, [connected, client, muted, audioRecorder]);
 
-  // Custom scrollbar styles
   const scrollbarStyles = `
     .hide-scrollbar::-webkit-scrollbar {
       width: 0px;

@@ -236,3 +236,179 @@ const features = {
 **Wizzly** - Empowering educators with interactive teaching tools and AI-powered assistance.
 
 © 2024 Wizzly. All rights reserved. 
+
+# Wizzly Teach Mode - AI Integration
+
+## Overview
+
+Wizzly Teach Mode now includes comprehensive AI integration powered by Google's Gemini API. The system provides context-aware assistance for educators across different teaching scenarios.
+
+## New Features
+
+### 🤖 Context-Aware AI Assistant
+
+The AI assistant automatically adapts its behavior based on the current context:
+
+- **YouTube Mode**: Video analysis, content extraction, and educational material creation
+- **Canvas Mode**: Visual content suggestions, diagramming assistance, and drawing guidance  
+- **Lesson Planner Mode**: Comprehensive lesson planning, objective refinement, and activity generation
+- **General Mode**: Flexible educational assistance
+
+### 🎯 AI-Powered Lesson Planning
+
+- **Automatic Lesson Plan Generation**: Create complete lesson plans from topic, grade level, and duration
+- **SMART Objective Refinement**: Transform basic objectives into specific, measurable learning goals
+- **Activity Suggestions**: Generate engaging activities aligned with learning objectives
+- **Educational Content Analysis**: Analyze videos, texts, and other materials for teaching insights
+
+### 🔧 Tool Calling Integration
+
+The AI can execute actions directly:
+
+- **YouTube Controls**: Play, pause, jump to timestamps, get video status
+- **Canvas Operations**: Drawing suggestions, visual content guidance
+- **Lesson Management**: Create, update, and organize lesson components
+
+## Implementation Details
+
+### Core Components
+
+1. **GeminiAIService** (`lib/gemini-ai-service.ts`)
+   - Handles all AI interactions with context awareness
+   - Manages lesson plan generation and objective refinement
+   - Provides video content analysis
+
+2. **ToolHandler** (`lib/tool-handler.ts`)
+   - Processes function calls from the AI
+   - Executes YouTube controls and teaching tools
+   - Handles cross-context operations
+
+3. **useAIService Hook** (`hooks/use-ai-service.ts`)
+   - React hook for AI service integration
+   - Manages loading states and error handling
+   - Provides conversation history management
+
+4. **Context-Aware Components**
+   - **MicrophoneControls**: Voice assistant with context indicators
+   - **LessonPlanner**: AI-powered lesson planning interface
+   - **ApiKeySettings**: Secure API key management
+
+### State Management
+
+The global Zustand store now includes:
+
+```typescript
+interface StoreState {
+  // Context awareness
+  appContext: AppContext; // 'youtube' | 'canvas' | 'lesson-planner' | 'general'
+  setAppContext: (context: AppContext) => void;
+  
+  // AI state
+  isAiLoading: boolean;
+  aiError: string | null;
+  
+  // API Key management
+  geminiApiKey: string | null;
+  setGeminiApiKey: (key: string | null) => void;
+}
+```
+
+### Function Declarations
+
+The system includes comprehensive function declarations for:
+
+- **YouTube Controls**: Video playback management
+- **Teaching Tools**: Lesson planning, objective refinement, content analysis
+- **Canvas Assistance**: Visual content creation guidance
+
+### Security & Privacy
+
+- API keys are stored locally in browser storage
+- No sensitive data is transmitted to external servers
+- All AI interactions are direct with Google's Gemini API
+
+## Usage Examples
+
+### Setting Up API Key
+
+```typescript
+import useStore from '@/entrypoints/store/store';
+
+const { setGeminiApiKey } = useStore();
+setGeminiApiKey('your-gemini-api-key');
+```
+
+### Using AI Service
+
+```typescript
+import { useAIService } from '@/entrypoints/hooks/use-ai-service';
+
+const aiService = useAIService({ 
+  apiKey: 'your-api-key', 
+  context: 'lesson-planner' 
+});
+
+// Generate lesson plan
+const lessonPlan = await aiService.generateLessonPlan(
+  'Photosynthesis',
+  '6-8',
+  45
+);
+
+// Refine objective
+const refinedObjective = await aiService.refineObjective(
+  'Students will learn about plants',
+  '6-8',
+  'Biology'
+);
+```
+
+### Context Switching
+
+```typescript
+import useStore from '@/entrypoints/store/store';
+
+const { setAppContext } = useStore();
+
+// Switch to lesson planner mode
+setAppContext('lesson-planner');
+
+// Switch to canvas mode
+setAppContext('canvas');
+
+// Switch to YouTube mode
+setAppContext('youtube');
+```
+
+## Getting Started
+
+1. **Obtain Gemini API Key**
+   - Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - Create a new API key
+   - Copy the key for use in Wizzly
+
+2. **Configure API Key**
+   - Click the settings button in the top-right corner
+   - Enter your Gemini API key
+   - Save the configuration
+
+3. **Start Using AI Features**
+   - The AI assistant will automatically adapt to your current context
+   - Use voice commands or chat interface for assistance
+   - Access AI-powered tools in the lesson planner
+
+## Error Handling
+
+The system includes comprehensive error handling:
+
+- **API Key Validation**: Checks for proper key format
+- **Network Error Recovery**: Graceful handling of connection issues
+- **Context Validation**: Ensures appropriate tools are available for each context
+- **User Feedback**: Clear error messages and loading indicators
+
+## Future Enhancements
+
+- **Multi-language Support**: Lesson planning in multiple languages
+- **Advanced Analytics**: Learning outcome predictions and recommendations
+- **Collaborative Features**: Shared lesson planning with AI assistance
+- **Integration Expansion**: Additional educational platforms and tools 

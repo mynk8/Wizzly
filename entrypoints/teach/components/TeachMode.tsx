@@ -2,25 +2,33 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { 
   Tldraw, 
   Editor,
-  TLComponents,
   TLOnMountHandler,
   createShapeId
 } from '@tldraw/tldraw';
 import '@tldraw/tldraw/tldraw.css';
 
 import SidePanel from './SidePanel';
-import YouTubeToolbarEnhanced from './YouTubeToolbarEnhanced';
 
 import { handleYouTubePaste } from '../utils/canvas';
 import { YouTubeShapeUtil, isYouTubeUrl, extractYouTubeId } from '../utils/YouTubeShapeUtil';
+import { AIPromptShapeUtil, AIResponseShapeUtil } from '../utils/AIPromptShapeUtil';
+import { AIPromptShapeTool } from '../utils/AIPromptShapeTool';
+import { uiOverrides, components } from '../utils/ui-overrides';
+import useStore from '@/entrypoints/store/store';
 
-const customComponents: TLComponents = {
-  InFrontOfTheCanvas: YouTubeToolbarEnhanced,
-};
+// Define arrays outside of component to avoid redefinition on every render
+const customShapeUtils = [YouTubeShapeUtil, AIPromptShapeUtil, AIResponseShapeUtil];
+const customTools = [AIPromptShapeTool];
 
 const TeachMode: React.FC = () => {
   const [editor, setEditor] = useState<Editor | null>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const { setAppContext } = useStore();
+
+  // Set context when component mounts
+  useEffect(() => {
+    setAppContext('canvas');
+  }, [setAppContext]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,6 +43,11 @@ const TeachMode: React.FC = () => {
 
   const handleEditorMount: TLOnMountHandler = useCallback((editor: Editor) => {
     setEditor(editor);
+  }, []);
+
+  // Separate useEffect for event listener setup and cleanup
+  useEffect(() => {
+    if (!editor) return;
 
     const handlePasteEvent = (e: ClipboardEvent) => {
       const text = e.clipboardData?.getData('text/plain');
@@ -44,18 +57,22 @@ const TeachMode: React.FC = () => {
       }
     };
 
-    const container = editor.getContainer();
+    let container;
+    try {
+      container = editor.getContainer();
+    } catch (error) {
+      console.error('Failed to get editor container:', error);
+      return;
+    }
     container.addEventListener('paste', handlePasteEvent, { capture: true });
-
     document.addEventListener('paste', handlePasteEvent, { capture: true });
 
+    // Cleanup function
     return () => {
       container.removeEventListener('paste', handlePasteEvent, { capture: true });
       document.removeEventListener('paste', handlePasteEvent, { capture: true });
     };
-  }, []);
-
-  const shapeUtils = [YouTubeShapeUtil];
+  }, [editor]);
 
   const isSmallScreen = windowWidth < 768;
 
@@ -65,8 +82,10 @@ const TeachMode: React.FC = () => {
         <Tldraw
           onMount={handleEditorMount}
           persistenceKey="teach-mode-canvas"
-          shapeUtils={shapeUtils}
-          components={customComponents}
+          shapeUtils={customShapeUtils}
+          tools={customTools}
+          overrides={uiOverrides}
+          components={components}
         />
       </div>
 

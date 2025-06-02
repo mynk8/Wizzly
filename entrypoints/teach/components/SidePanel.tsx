@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Editor } from '@tldraw/tldraw';
-import { MessageCircle, Mic, BookOpen, Camera, X, Minimize2, Maximize2, Youtube, BarChart3, Home, Folder, Expand, Shrink } from 'lucide-react';
+import { MessageCircle, Mic, BookOpen, Camera, X, Minimize2, Maximize2, Youtube, BarChart3, Home, Folder, Expand, Shrink, Settings } from 'lucide-react';
 import useStore from '../../store/store';
 import './SidePanel.css';
 
@@ -11,10 +11,9 @@ import CanvasNoteModal from './CanvasNoteModal';
 import LessonPlanner from './LessonPlanner';
 import ResourceManager from './ResourceManager';
 import LessonHistory from './LessonHistory';
+import SettingsPanel from './SettingsPanel';
 import { GenAIProvider } from '../../contexts/ChatAPIContext';
 import { LiveAPIProvider } from '../../contexts/LiveAPIContext';
-
-const apiKey = "";
 
 const FULLSCREEN_TABS = ['planner', 'resources', 'history'];
 
@@ -23,11 +22,11 @@ interface SidePanelProps {
 }
 
 const SidePanel: React.FC<SidePanelProps> = ({ editor }) => {
-  const [activeTab, setActiveTab] = useState<'planner' | 'chat' | 'voice' | 'notes' | 'resources' | 'history'>('planner');
+  const [activeTab, setActiveTab] = useState<'planner' | 'chat' | 'voice' | 'notes' | 'resources' | 'history' | 'settings'>('planner');
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [noteModalOpen, setNoteModalOpen] = useState(false);
-  const { theme } = useStore();
+  const { theme, geminiApiKey } = useStore();
 
   const handleCaptureCanvas = () => {
     setNoteModalOpen(true);
@@ -122,6 +121,13 @@ const SidePanel: React.FC<SidePanelProps> = ({ editor }) => {
             <BarChart3 className="w-4 h-4" />
           </button>
           <button 
+            onClick={() => { setActiveTab('settings'); setIsCollapsed(false); }}
+            className={`btn btn-sm btn-square w-full transition-all duration-200 hover:scale-105 ${!geminiApiKey ? 'btn-warning' : 'btn-ghost'}`}
+            title="Settings"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+          <button 
             onClick={handleCaptureCanvas}
             className="btn btn-primary btn-sm btn-square w-full transition-all duration-200 hover:scale-105 hover:shadow-lg"
             title="Capture Canvas"
@@ -138,7 +144,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ editor }) => {
       isFullScreen ? 'fixed inset-0 z-[60] w-full' : 'w-96 z-50'
     }`}>
       <div className="flex items-center justify-between p-2 border-b border-gray-200 bg-gray-100">
-        <div className={`tabs tabs-bordered flex-1 ${isFullScreen ? 'flex flex-row gap-1' : 'grid grid-cols-3 gap-1'}`}>
+        <div className={`tabs tabs-bordered flex-1 ${isFullScreen ? 'flex flex-row gap-1' : 'flex flex-wrap gap-1'}`}>
           <button 
             className={`tab tab-xs h-12 ${activeTab === 'planner' ? 'tab-active bg-gray-300 rounded-lg' : ''} ${(isFullScreen || activeTab === 'planner') ? 'flex-col' : ''}`}
             onClick={() => setActiveTab('planner')}
@@ -186,6 +192,14 @@ const SidePanel: React.FC<SidePanelProps> = ({ editor }) => {
           >
             <BarChart3 className="w-4 h-4" />
             {(isFullScreen || activeTab === 'history') && <span className={`text-xs ${isFullScreen ? 'ml-1' : 'mt-1'}`}>History</span>}
+          </button>
+          <button 
+            className={`tab tab-xs h-12 ${activeTab === 'settings' ? 'tab-active bg-gray-300 rounded-lg' : ''} ${(isFullScreen || activeTab === 'settings') ? 'flex-col' : ''} ${!geminiApiKey ? 'text-warning' : ''}`}
+            onClick={() => setActiveTab('settings')}
+            title="Settings"
+          >
+            <Settings className="w-4 h-4" />
+            {(isFullScreen || activeTab === 'settings') && <span className={`text-xs ${isFullScreen ? 'ml-1' : 'mt-1'}`}>Settings</span>}
           </button>
         </div>
         <div className={`flex ${isFullScreen ? 'flex-row gap-2 ml-4' : 'flex-col gap-1 ml-2'}`}>
@@ -236,6 +250,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ editor }) => {
                 {activeTab === 'chat' && <MessageCircle className="w-5 h-5" />}
                 {activeTab === 'voice' && <Mic className="w-5 h-5" />}
                 {activeTab === 'notes' && <BookOpen className="w-5 h-5" />}
+                {activeTab === 'settings' && <Settings className="w-5 h-5" />}
               </div>
               <div>
                 <h1 className="text-xl font-bold">
@@ -245,6 +260,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ editor }) => {
                   {activeTab === 'chat' && 'AI Assistant'}
                   {activeTab === 'voice' && 'Voice Controls'}
                   {activeTab === 'notes' && 'Notes Library'}
+                  {activeTab === 'settings' && 'Settings'}
                 </h1>
                 <p className="text-white/80 text-sm">
                   {activeTab === 'planner' && 'Plan and organize your lesson structure and flow'}
@@ -253,6 +269,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ editor }) => {
                   {activeTab === 'chat' && 'Get help with lesson planning and content creation'}
                   {activeTab === 'voice' && 'Hands-free interaction with voice commands'}
                   {activeTab === 'notes' && 'Organize and search your teaching notes'}
+                  {activeTab === 'settings' && 'Configure your preferences and API settings'}
                 </p>
               </div>
             </div>
@@ -277,7 +294,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ editor }) => {
         
         {activeTab === 'chat' && (
           <div className="h-full">
-            <GenAIProvider apiKey={apiKey}>
+            <GenAIProvider apiKey={geminiApiKey || ''}>
               <Chat />
             </GenAIProvider>
           </div>
@@ -285,7 +302,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ editor }) => {
         
         {activeTab === 'voice' && (
           <div className="h-full">
-            <LiveAPIProvider options={{ apiKey: apiKey }}>
+            <LiveAPIProvider options={{ apiKey: geminiApiKey || '' }}>
               <MicrophoneControls />
             </LiveAPIProvider>
           </div>
@@ -294,6 +311,12 @@ const SidePanel: React.FC<SidePanelProps> = ({ editor }) => {
         {activeTab === 'notes' && (
           <div className="h-full">
             <NotesLibrary />
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div className="h-full">
+            <SettingsPanel />
           </div>
         )}
 

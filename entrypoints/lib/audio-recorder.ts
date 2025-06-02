@@ -1,8 +1,4 @@
 import { audioContext } from "./utils";
-import AudioRecordingWorklet from "./worklets/audio-processing";
-import VolMeterWorket from "./worklets/vol-meter";
-
-import { createWorketFromSrc } from "./audioworklet-registry";
 import EventEmitter from "eventemitter3";
 
 function arrayBufferToBase64(buffer: ArrayBuffer) {
@@ -39,13 +35,14 @@ export class AudioRecorder extends EventEmitter {
       this.audioContext = await audioContext({ sampleRate: this.sampleRate });
       this.source = this.audioContext.createMediaStreamSource(this.stream);
 
-      const workletName = "audio-recorder-worklet";
-      const src = createWorketFromSrc(workletName, AudioRecordingWorklet);
-
-      await this.audioContext.audioWorklet.addModule(src);
+      const audioWorkletUrl = (globalThis as any).chrome?.runtime?.getURL('worklets/audio-processing-worklet.js');
+      if (!audioWorkletUrl) {
+        throw new Error('Chrome extension runtime API not available');
+      }
+      await this.audioContext.audioWorklet.addModule(audioWorkletUrl);
       this.recordingWorklet = new AudioWorkletNode(
         this.audioContext,
-        workletName,
+        "audio-recorder-worklet",
       );
 
       this.recordingWorklet.port.onmessage = async (ev: MessageEvent) => {
@@ -59,12 +56,13 @@ export class AudioRecorder extends EventEmitter {
       };
       this.source.connect(this.recordingWorklet);
 
-      // vu meter worklet
-      const vuWorkletName = "vu-meter";
-      await this.audioContext.audioWorklet.addModule(
-        createWorketFromSrc(vuWorkletName, VolMeterWorket),
-      );
-      this.vuWorklet = new AudioWorkletNode(this.audioContext, vuWorkletName);
+      // Load volume meter worklet using chrome.runtime.getURL
+      const volMeterWorkletUrl = (globalThis as any).chrome?.runtime?.getURL('worklets/vol-meter-worklet.js');
+      if (!volMeterWorkletUrl) {
+        throw new Error('Chrome extension runtime API not available');
+      }
+      await this.audioContext.audioWorklet.addModule(volMeterWorkletUrl);
+      this.vuWorklet = new AudioWorkletNode(this.audioContext, "vu-meter");
       this.vuWorklet.port.onmessage = (ev: MessageEvent) => {
         this.emit("volume", ev.data.volume);
       };

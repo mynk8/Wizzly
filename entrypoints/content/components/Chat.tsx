@@ -14,7 +14,7 @@ const BotMessage = ({ message, role, theme }: { message: string; role: string; t
       className={`chat ${role === "user" ? "chat-end" : "chat-start"} w-full`}
     >
       <div className={`chat-header opacity-50 text-xs uppercase tracking-wide mb-1`}>
-        {role === "user" ? "You" : "Bot"}
+        {role === "user" ? "You" : "Wizzly"}
       </div>
       <div className={`chat-bubble ${role === "user" ? "chat-bubble-primary" : "chat-bubble-secondary"} max-w-[90%] whitespace-pre-wrap`}>
         {message}
@@ -49,7 +49,7 @@ const NoteBadge = ({ note, onRemove }: { note: Note; onRemove: () => void }) => 
 
 const Chat = () => {
   const { ai } = useGenAIContext();
-  const { messages, addMessage, updateLastMessage, theme, transcript, resetMessages } = useStore();
+  const { messages, addMessage, updateLastMessage, theme, transcript, resetMessages, appContext } = useStore();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [noteSelectorOpen, setNoteSelectorOpen] = useState(false);
@@ -58,13 +58,26 @@ const Chat = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const chatRef = useRef<any>(null);
 
-  const [suggestions] = useState([
+  // Simple suggestions for general help and YouTube controls
+  const suggestions = useMemo(() => {
+    if (appContext === 'youtube') {
+      return [
     { id: "1", text: "What is this video about?" },
-    { id: "2", text: "Summarize the key points." },
-    { id: "3", text: "What are the main topics discussed?" },
-    { id: "4", text: "What is the main message of the video?" },
-    { id: "5", text: "What is the main takeaway from the video?" },
-  ]);
+        { id: "2", text: "Summarize the key points" },
+        { id: "3", text: "Play the video" },
+        { id: "4", text: "Pause the video" },
+        { id: "5", text: "Jump to 2 minutes" },
+      ];
+    }
+    
+    return [
+      { id: "1", text: "Search for information about..." },
+      { id: "2", text: "What is the latest news on..." },
+      { id: "3", text: "Help me understand..." },
+      { id: "4", text: "Find facts about..." },
+      { id: "5", text: "Explain the concept of..." },
+    ];
+  }, [appContext]);
 
   const memoizedHistory = useMemo(
     () =>
@@ -89,18 +102,39 @@ const Chat = () => {
     return context;
   }, [selectedNotes, transcript]);
 
+  // Simple system instruction for general assistance
+  const systemInstruction = useMemo(() => {
+    let baseInstruction = `You are Wizzly, a helpful AI assistant. You can help users find information, search for facts, answer questions, and provide explanations on various topics.`;
+    
+    if (appContext === 'youtube' && transcript) {
+      baseInstruction += ` You also have access to YouTube video controls and can answer questions about the current video using this transcript: ${transcript}`;
+    }
+    
+    if (contextWithNotes) {
+      baseInstruction += contextWithNotes;
+    }
+    
+    return baseInstruction;
+  }, [appContext, transcript, contextWithNotes]);
+
   useEffect(() => {
+    const config: any = {
+      systemInstruction,
+    };
+
+    // Only add YouTube controls if we're in YouTube mode
+    if (appContext === 'youtube') {
+      config.tools = [{
+        functionDeclarations: youTubeControlDeclarations
+      }];
+    }
+
     chatRef.current = ai.chats.create({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash",
       history: memoizedHistory,
-      config: {
-        systemInstruction: `You are a helpful qna assistant you have to answer the questions related to the youtube video of which the transcript you are given here, ${contextWithNotes}. You also have access to YouTube video controls to play, pause, check status, and jump to specific times in the current video.`,
-        tools: [{
-          functionDeclarations: youTubeControlDeclarations
-        }]
-      }
+      config
     });
-  }, [ai, contextWithNotes, memoizedHistory]);
+  }, [ai, systemInstruction, appContext, memoizedHistory]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -125,6 +159,7 @@ const Chat = () => {
     setInput(suggestionText);
   };
 
+  // Simple YouTube function execution
   const executeYouTubeFunction = (functionName: string, args: any) => {
     switch (functionName) {
       case 'play_youtube_video':
@@ -232,25 +267,37 @@ const Chat = () => {
       }
     }
     
+    const config: any = {
+      systemInstruction,
+    };
+
+    if (appContext === 'youtube') {
+      config.tools = [{
+        functionDeclarations: youTubeControlDeclarations
+      }];
+    }
+    
     chatRef.current = ai.chats.create({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash",
       history: [],
-      config: {
-        systemInstruction: `You are a helpful qna assistant you have to answer the questions related to the youtube video of which the transcript you are given here, ${contextWithNotes}. You also have access to YouTube video controls to play, pause, check status, and jump to specific times in the current video.`,
-        tools: [{
-          functionDeclarations: youTubeControlDeclarations
-        }]
-      }
+      config
     });
     
     setSelectedNotes([]);
-  }, [ai, contextWithNotes, resetMessages]);
+  }, [ai, systemInstruction, appContext, resetMessages]);
+
+  const getContextDisplayName = () => {
+    if (appContext === 'youtube') {
+      return useStore.getState().currentVideoId ? 'Chat - YouTube Mode' : 'Chat - YouTube (No video)';
+    }
+    return 'Chat Assistant';
+  };
 
   return (
     <div className="card h-full bg-base-100 shadow-xl">
       <div className="card-header px-4 py-2 flex justify-between items-center border-b border-base-300">
         <div className="text-sm font-medium">
-          {useStore.getState().currentVideoId ? 'Chat' : 'Chat (No video detected)'}
+          {getContextDisplayName()}
         </div>
         <button
           onClick={handleResetChat}
@@ -307,7 +354,7 @@ const Chat = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
+            placeholder="Ask me anything or search for information..."
             disabled={isLoading}
             style={{ height: '40px', minHeight: '40px' }}
           />

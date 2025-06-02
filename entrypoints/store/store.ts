@@ -5,6 +5,8 @@ export interface Message {
     text: string;
 }
 
+export type AppContext = 'youtube' | 'canvas' | 'lesson-planner' | 'general';
+
 interface StoreState {
     mode: 'chat' | 'voice' | 'notes';
     setMode: (mode: 'chat' | 'voice' | 'notes') => void;
@@ -18,6 +20,20 @@ interface StoreState {
     setTranscript: (transcript: string | null) => void;
     currentVideoId: string | null;
     setCurrentVideoId: (videoId: string | null) => void;
+    
+    // Context awareness
+    appContext: AppContext;
+    setAppContext: (context: AppContext) => void;
+    
+    // AI state
+    isAiLoading: boolean;
+    setIsAiLoading: (loading: boolean) => void;
+    aiError: string | null;
+    setAiError: (error: string | null) => void;
+    
+    // API Key management
+    geminiApiKey: string | null;
+    setGeminiApiKey: (key: string | null) => void;
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -33,12 +49,26 @@ const useStore = create<StoreState>((set) => ({
         return { messages };
     }),
     resetMessages: () => set({ messages: [] }),
-    theme: 'dark',
+    theme: 'light',
     toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
     transcript: null,
     setTranscript: (transcript) => set({ transcript }),
     currentVideoId: null,
     setCurrentVideoId: (videoId) => set({ currentVideoId: videoId }),
+    
+    // Context awareness
+    appContext: 'general',
+    setAppContext: (context) => set({ appContext: context }),
+    
+    // AI state
+    isAiLoading: false,
+    setIsAiLoading: (loading) => set({ isAiLoading: loading }),
+    aiError: null,
+    setAiError: (error) => set({ aiError: error }),
+    
+    // API Key management
+    geminiApiKey: null,
+    setGeminiApiKey: (key) => set({ geminiApiKey: key }),
 }));
 
 export default useStore;
