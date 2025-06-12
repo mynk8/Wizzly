@@ -9,7 +9,7 @@ import useStore from '@/entrypoints/store/store';
 import NoteModal from './components/NoteModal';
 import NotesLibrary from './components/NotesLibrary';
 
-const apiKey = "AIzaSyAWOkUIDR7WsTmBeMr-1jA6VRH8SnLbbZI";
+const apiKey = "";
 
 interface TitleBarProps {
   collapsed: boolean;
