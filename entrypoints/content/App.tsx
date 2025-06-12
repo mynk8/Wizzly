@@ -9,9 +9,7 @@ import useStore from '@/entrypoints/store/store';
 import NoteModal from './components/NoteModal';
 import NotesLibrary from './components/NotesLibrary';
 
-const host = "generativelanguage.googleapis.com";
-const uri = `wss://${host}/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`;
-const apiKey = "";
+const apiKey = "AIzaSyAWOkUIDR7WsTmBeMr-1jA6VRH8SnLbbZI";
 
 interface TitleBarProps {
   collapsed: boolean;
@@ -32,8 +30,6 @@ function TitleBar({
   collapsed, 
   onToggleCollapse, 
   onDragStart, 
-  setSettings, 
-  settings, 
   mode, 
   onToggleMode, 
   theme, 

@@ -109,7 +109,6 @@ const LessonPlanner: React.FC<LessonPlannerProps> = ({ editor }) => {
   const [aiLessonPlanForm, setAiLessonPlanForm] = useState({ topic: '', grade: '', duration: '45' });
   const [aiObjectiveForm, setAiObjectiveForm] = useState({ originalText: '', refinedText: ''});
 
-  // Set context when component mounts
   useEffect(() => {
     setAppContext('lesson-planner');
   }, [setAppContext]);
@@ -121,7 +120,7 @@ const LessonPlanner: React.FC<LessonPlannerProps> = ({ editor }) => {
       setCurrentLesson({
         ...parsed,
         date: new Date(parsed.date),
-        students: parsed.students || [] // Ensure students array exists
+        students: parsed.students || []
       });
     } else {
       setCurrentLesson(prev => ({
@@ -538,7 +537,7 @@ const LessonPlanner: React.FC<LessonPlannerProps> = ({ editor }) => {
             </div>
           </div>
 
-          <div className="tabs tabs-boxed overflow-x-auto bg-gray-100 p-1">
+          <div className="tabs tabs-boxed overflow-x-scroll bg-gray-100 p-1">
             <div className="flex gap-0.5 min-w-max">
               <button 
                 className={`tab tab-xs sm:tab-sm lg:tab-md whitespace-nowrap px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm ${activeSection === 'overview' ? 'tab-active' : ''}`}

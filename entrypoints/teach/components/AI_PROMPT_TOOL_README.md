@@ -1,4 +1,4 @@
-# AI Prompt Tool for Wizzly Canvas
+# Documentation for AI Prompt Tool for Wizzly Canvas
 
 ## Overview
 The AI Prompt Tool is a new interactive widget that can be added to the Wizzly Canvas (tldraw) allowing users to write prompts and get AI responses directly within shapes on the canvas.

@@ -6,9 +6,13 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   manifest: {
     permissions: ['audio', 'storage', 'tabs', 'activeTab'],
+    action: {
+      default_popup: 'popup.html',
+      default_title: 'Wizzly Teaching Assistant'
+    },
     web_accessible_resources: [
       {
-        resources: ['worklets/*.js'],
+        resources: ['worklets/*.js', 'teach.html'],
         matches: ['<all_urls>'],
       },
     ],
