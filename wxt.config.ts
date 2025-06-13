@@ -24,13 +24,13 @@ export default defineConfig({
       postcss: {
         plugins: [
           remToPixel({
-            rootValue: 16,           // Your base font size (16px = 1rem)
-            unitPrecision: 5,        // Decimal precision
-            selectorBlackList: [],   // Selectors to ignore
-            propList: ['*'],         // Convert all properties (* means all)
-            replace: true,           // Replace rem with px (don't keep both)
-            mediaQuery: true,        // Also convert rem in media queries
-            minRemValue: 0           // Convert all rem values, no minimum
+            rootValue: 16,
+            unitPrecision: 5,
+            selectorBlackList: [],
+            propList: ['*'],
+            replace: true,
+            mediaQuery: true,
+            minRemValue: 0
           })
         ]
       }
