@@ -139,9 +139,39 @@ function App() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dimensions, setDimensions] = useState({ width: 540, height: window.innerHeight });
   const [noteModalOpen, setNoteModalOpen] = useState(false);
-  const { mode, setMode, theme, toggleTheme } = useStore();
+  const { mode, setMode, theme, toggleTheme, setAppContext, appContext } = useStore();
   const [isPinned, setIsPinned] = useState(true);
   const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
+
+  // YouTube mode detection and debugging
+  useEffect(() => {
+    const isYouTube = window.location.hostname.includes('youtube.com');
+    console.log('🔍 YouTube Detection Debug:', {
+      hostname: window.location.hostname,
+      isYouTube,
+      currentAppContext: appContext,
+      url: window.location.href
+    });
+
+    if (isYouTube) {
+      console.log('✅ Setting app context to YouTube mode');
+      setAppContext('youtube');
+    } else {
+      console.log('ℹ️ Not on YouTube, setting general mode');
+      setAppContext('general');
+    }
+  }, [setAppContext, appContext]);
+
+  // Debug current state
+  useEffect(() => {
+    console.log('🎯 Current App State:', {
+      appContext,
+      mode,
+      isYouTube: window.location.hostname.includes('youtube.com'),
+      hasVideo: !!document.querySelector('video'),
+      url: window.location.href
+    });
+  }, [appContext, mode]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (isPinned) return;

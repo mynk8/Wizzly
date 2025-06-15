@@ -58,15 +58,29 @@ const Chat = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const chatRef = useRef<any>(null);
 
+  // Debug mode detection
+  useEffect(() => {
+    console.log('🎯 Chat Component Debug:', {
+      appContext,
+      transcript: transcript ? `${transcript.substring(0, 100)}...` : null,
+      isYouTubeMode: appContext === 'youtube',
+      hasTranscript: !!transcript,
+      willShowYouTubeTools: appContext === 'youtube' && !!transcript,
+      currentUrl: window.location.href,
+      hasVideo: !!document.querySelector('video')
+    });
+  }, [appContext, transcript]);
+
   // Simple suggestions for general help and YouTube controls
   const suggestions = useMemo(() => {
     if (appContext === 'youtube') {
       return [
-    { id: "1", text: "What is this video about?" },
+        { id: "1", text: "What is this video about?" },
         { id: "2", text: "Summarize the key points" },
         { id: "3", text: "Play the video" },
         { id: "4", text: "Pause the video" },
-        { id: "5", text: "Jump to 2 minutes" },
+        { id: "5", text: "Jump to 2 minutes and 30 seconds" },
+        { id: "6", text: "What's the current video status?" },
       ];
     }
     
@@ -106,14 +120,47 @@ const Chat = () => {
   const systemInstruction = useMemo(() => {
     let baseInstruction = `You are Wizzly, a helpful AI assistant. You can help users find information, search for facts, answer questions, and provide explanations on various topics.`;
     
+    console.log('🔧 System Instruction Debug:', {
+      appContext,
+      hasTranscript: !!transcript,
+      willAddYouTubeInstructions: appContext === 'youtube' && transcript
+    });
+    
     if (appContext === 'youtube' && transcript) {
-      baseInstruction += ` You also have access to YouTube video controls and can answer questions about the current video using this transcript: ${transcript}`;
+      baseInstruction += `
+
+You are currently in YouTube mode and have access to video control functions. You MUST use these functions when users request video controls:
+
+AVAILABLE FUNCTIONS:
+- play_youtube_video: Use when user says "play", "start", "resume", or similar
+- pause_youtube_video: Use when user says "pause", "stop", "halt", or similar  
+- get_youtube_video_status: Use when user asks about video status, current time, or playback state
+- jump_to_time: Use when user wants to go to a specific time (convert time to seconds - e.g., "2 minutes 30 seconds" = 150 seconds)
+
+IMPORTANT: When users request video controls, you MUST call the appropriate function. Do not just provide text instructions - actually execute the function.
+
+Examples:
+- User: "Play the video" → Call play_youtube_video function
+- User: "Jump to 2:30" → Call jump_to_time function with timeInSeconds: 150
+- User: "Pause it" → Call pause_youtube_video function
+- User: "What's the current time?" → Call get_youtube_video_status function
+
+You also have access to this video transcript: ${transcript}
+
+Use the transcript to answer questions about the video content, summarize key points, or help users navigate to specific topics by jumping to relevant timestamps.`;
+      
+      console.log('✅ Added YouTube instructions to system prompt');
+    } else {
+      console.log('❌ YouTube instructions NOT added:', {
+        reason: appContext !== 'youtube' ? 'Not in YouTube mode' : 'No transcript available'
+      });
     }
     
     if (contextWithNotes) {
       baseInstruction += contextWithNotes;
     }
     
+    console.log('📝 Final system instruction length:', baseInstruction.length);
     return baseInstruction;
   }, [appContext, transcript, contextWithNotes]);
 
@@ -127,7 +174,18 @@ const Chat = () => {
       config.tools = [{
         functionDeclarations: youTubeControlDeclarations
       }];
+      console.log('🛠️ Added YouTube tools to config:', youTubeControlDeclarations.length, 'functions');
+    } else {
+      console.log('🚫 No YouTube tools added - not in YouTube mode');
     }
+
+    console.log('🤖 Creating chat with config:', {
+      hasSystemInstruction: !!config.systemInstruction,
+      hasTools: !!config.tools,
+      toolCount: config.tools ? config.tools[0].functionDeclarations.length : 0,
+      appContext,
+      historyLength: memoizedHistory.length
+    });
 
     chatRef.current = ai.chats.create({
       model: "gemini-1.5-flash",
@@ -159,8 +217,10 @@ const Chat = () => {
     setInput(suggestionText);
   };
 
-  // Simple YouTube function execution
+  // YouTube function execution with better error handling
   const executeYouTubeFunction = (functionName: string, args: any) => {
+    console.log(`Executing YouTube function: ${functionName}`, args);
+    
     switch (functionName) {
       case 'play_youtube_video':
         return playYouTubeVideo();
@@ -169,12 +229,19 @@ const Chat = () => {
       case 'get_youtube_video_status':
         return getYouTubeVideoStatus();
       case 'jump_to_time':
+        if (!args || typeof args.timeInSeconds === 'undefined') {
+          return {
+            success: false,
+            action: 'jump_to_time',
+            message: 'Time parameter is required for jump_to_time function'
+          };
+        }
         return jumpToTimeInVideo(args.timeInSeconds);
       default:
         return {
           success: false,
           action: 'unknown',
-          message: `Unknown function: ${functionName}`
+          message: `Unknown function: ${functionName}. Available functions: play_youtube_video, pause_youtube_video, get_youtube_video_status, jump_to_time`
         };
     }
   };
@@ -187,20 +254,41 @@ const Chat = () => {
     setInput("");
     setIsLoading(true);
 
+    console.log('📤 Sending message:', {
+      message: userMessage.text,
+      appContext,
+      hasYouTubeTools: appContext === 'youtube',
+      chatConfigured: !!chatRef.current
+    });
+
     try {
       const response = await chatRef.current.sendMessage({
         message: userMessage.text,
       });
 
+      console.log('📥 Received response:', {
+        hasText: !!response.text,
+        hasFunctionCalls: !!(response.functionCalls && response.functionCalls.length > 0),
+        functionCallCount: response.functionCalls ? response.functionCalls.length : 0,
+        functionNames: response.functionCalls ? response.functionCalls.map((fc: any) => fc.name) : []
+      });
+
       if (response.functionCalls && response.functionCalls.length > 0) {
-        console.log("Function calls detected:", response.functionCalls);
+        console.log("🔧 Function calls detected:", response.functionCalls);
         
         let functionResponseText = "";
+        let functionResults = [];
         
+        // Execute all function calls
         for (const functionCall of response.functionCalls) {
-          console.log("Executing function:", functionCall.name);
+          console.log("⚡ Executing function:", functionCall.name, "with args:", functionCall.args);
           const result = executeYouTubeFunction(functionCall.name, functionCall.args);
-          console.log("Function result:", result);
+          console.log("✅ Function result:", result);
+          
+          functionResults.push({
+            name: functionCall.name,
+            result: result
+          });
           
           if (result.success) {
             functionResponseText += `✅ ${result.message}\n`;
@@ -209,15 +297,37 @@ const Chat = () => {
           }
         }
 
-        addMessage({ 
-          role: "model", 
-          text: functionResponseText.trim() || "Function executed."
-        });
+        // Send function results back to the model to get a natural language response
+        try {
+          console.log('🔄 Sending function results back to model for natural language response');
+          const followUpResponse = await chatRef.current.sendMessage({
+            message: `Function execution results: ${JSON.stringify(functionResults)}`,
+          });
+          
+          console.log('📝 Follow-up response received:', {
+            hasText: !!followUpResponse.text,
+            textLength: followUpResponse.text ? followUpResponse.text.length : 0
+          });
+          
+          // Add the model's response about the function execution
+          addMessage({ 
+            role: "model", 
+            text: followUpResponse.text || functionResponseText.trim()
+          });
+        } catch (followUpError) {
+          console.error("❌ Error getting follow-up response:", followUpError);
+          // Fallback to just showing the function results
+          addMessage({ 
+            role: "model", 
+            text: functionResponseText.trim() || "Function executed."
+          });
+        }
       } else {
+        console.log('💬 No function calls, adding regular response');
         addMessage({ role: "model", text: response.text || "No response received." });
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("❌ Error in sendMessage:", error);
       addMessage({ role: "model", text: "Sorry, something went wrong." });
     } finally {
       setIsLoading(false);
@@ -293,19 +403,46 @@ const Chat = () => {
     return 'Chat Assistant';
   };
 
+  const handleDebugClick = () => {
+    const debugInfo = {
+      appContext,
+      transcript: transcript ? `${transcript.substring(0, 100)}...` : null,
+      isYouTubeMode: appContext === 'youtube',
+      hasTranscript: !!transcript,
+      willShowYouTubeTools: appContext === 'youtube' && !!transcript,
+      currentUrl: window.location.href,
+      hasVideo: !!document.querySelector('video'),
+      systemInstructionLength: systemInstruction.length,
+      messagesCount: messages.length,
+      selectedNotesCount: selectedNotes.length
+    };
+    
+    console.log('🐛 DEBUG INFO:', debugInfo);
+    alert(`Debug Info (check console for full details):\n\nMode: ${appContext}\nYouTube Tools: ${appContext === 'youtube' ? 'Enabled' : 'Disabled'}\nTranscript: ${!!transcript ? 'Available' : 'None'}\nVideo Element: ${!!document.querySelector('video') ? 'Found' : 'Not found'}`);
+  };
+
   return (
     <div className="card h-full bg-base-100 shadow-xl">
       <div className="card-header px-4 py-2 flex justify-between items-center border-b border-base-300">
         <div className="text-sm font-medium">
           {getContextDisplayName()}
         </div>
-        <button
-          onClick={handleResetChat}
-          className="btn btn-ghost btn-sm btn-square"
-          title="Reset chat"
-        >
-          <RefreshCw className="w-4 h-4" />
-        </button>
+        <div className="flex gap-1">
+          <button
+            onClick={handleDebugClick}
+            className="btn btn-ghost btn-sm btn-square"
+            title="Debug Info"
+          >
+            🐛
+          </button>
+          <button
+            onClick={handleResetChat}
+            className="btn btn-ghost btn-sm btn-square"
+            title="Reset chat"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {selectedNotes.length > 0 && (
