@@ -27,14 +27,14 @@ These issues widen the digital divide and prevent equitable access to modern, hi
 
 Wizzly directly attacks the root causes of digital educational inequality with a powerful, AI-powered offline-first suite—eliminating the need for costly infrastructure, consistent connectivity, or complex tools. It’s a single, unified platform that gives students autonomy and teachers superpowers, regardless of their environment.
 
-- **Offline-First by Design**: All core features—interactive canvas, note-taking, whiteboard, PDF exports, and voice controls—work fully without internet. No logins, no server dependencies.  
-- **AI Doubt Solving, Embedded in YouTube**: Transforms any YouTube tutorial into a smart classroom. Students can pause, ask doubts via chat or voice, and get real-time AI explanations. No additional app. No friction.  
-- **One-Stop Teaching Workspace**: Teachers can visually plan lessons, write over embedded videos, save reusable content, and even generate AI-powered objectives—all inside a drag-and-drop whiteboard.  
-- **Voice-First, Inclusive Interaction**: 95%+ accurate voice recognition, multilingual input support, and natural language understanding make it usable for early learners, rural classrooms, or visually impaired users.  
-- **No Setup. No Barriers.**: Install once as a Chrome extension. Works instantly on any device with a browser—no admin permissions, logins, or backend infrastructure needed.  
-- **Real-Time Sync with Video**: Notes, screenshots, and AI responses are auto-synced with YouTube timestamps for frictionless review and retention.  
-- **Fail-Safe Architecture**: If internet cuts off, Wizzly seamlessly switches to offline-only mode so that learning never stops.  
-- **Built for Low-End Devices**: Lightweight frontend, no backend calls, and full local storage usage make it ideal for low-RAM, low-power systems.  
+- Offline-First by Design: All core features—interactive canvas, note-taking, whiteboard, PDF exports, and voice controls—work fully without internet. No logins, no server dependencies.  
+- AI Doubt Solving, Embedded in YouTube: Transforms any YouTube tutorial into a smart classroom. Students can pause, ask doubts via chat or voice, and get real-time AI explanations. No additional app. No friction.  
+- One-Stop Teaching Workspace: Teachers can visually plan lessons, write over embedded videos, save reusable content, and even generate AI-powered objectives—all inside a drag-and-drop whiteboard.  
+- Voice-First, Inclusive Interaction: 95%+ accurate voice recognition, multilingual input support, and natural language understanding make it usable for early learners, rural classrooms, or visually impaired users.  
+- No Setup. No Barriers: Install once as a Chrome extension. Works instantly on any device with a browser—no admin permissions, logins, or backend infrastructure needed.  
+- Real-Time Sync with Video: Notes, screenshots, and AI responses are auto-synced with YouTube timestamps for frictionless review and retention.  
+- Fail-Safe Architecture: If internet cuts off, Wizzly seamlessly switches to offline-only mode so that learning never stops.  
+- Built for Low-End Devices: Lightweight frontend, no backend calls, and full local storage usage make it ideal for low-RAM, low-power systems.  
 
 Wizzly doesn’t just digitize education—it decentralizes it.** It removes every traditional blocker—connectivity, cost, hardware, and complexity—and delivers a truly inclusive, personalized, and scalable solution aligned with **UN SDG 4: Quality Education.
 
@@ -56,23 +56,23 @@ Wizzly doesn’t just digitize education—it decentralizes it.** It removes eve
 ### For Learners
 
 | **Capability**                    | **Description**                                                                             |
-|-----------------------------------|---------------------|---------------------------------------------------------------------------------------------|
-| AI-Driven Learning Companion  | Receive real-time explanations and doubt resolution while watching tutorials.              |
-| Interactive Voice Support     | Converse directly with AI to clarify concepts without disrupting learning flow.            |
-| Personal Note Management    | Take, organize, and revisit notes alongside videos — tailored for retention.               |
-| Intelligent Video Control     | Navigate video content using chat or voice commands for a smoother experience.             |
+|-----------------------------------|---------------------------------------------------------------------------------------------|
+| AI-Driven Learning Companion      | Receive real-time explanations and doubt resolution while watching tutorials.                   |
+| Interactive Voice Support         | Converse directly with AI to clarify concepts without disrupting learning flow.                 |
+| Personal Note Management          | Take, organize, and revisit notes alongside videos — tailored for retention.                    |
+| Intelligent Video Control         | Navigate video content using chat or voice commands for a smoother experience.                  |
 
 ## Technology Stack
 
 Wizzly is built using a lightweight, resilient, and browser-native architecture tailored for both online and offline learning environments. The stack emphasizes accessibility, performance, and ease of use—making quality education truly borderless.
 
-- **Chrome Extension Runtime**: Ensures smooth integration directly into the browser, allowing intelligent overlay features on platforms like YouTube and web-based learning tools.  
-- **Tldraw API**: Powers the visual canvas with a flexible, interactive whiteboard for drawing, annotation, and lesson creation—ideal for teachers.  
-- **ReactJS + JavaScript (ES6+)**: Drives a dynamic, responsive user interface across both the canvas and the AI assistant overlay, with reusable components for scalability.  
-- **Web APIs (Speech Recognition, IndexedDB, etc.)**: Enable voice-based interaction, local data storage, and offline availability—crucial for low-connectivity areas.  
-- **Tailwind CSS**: Provides a clean and consistent UI across components, optimized for both functionality and aesthetic simplicity.  
-- **Firebase (Optional Cloud Sync)**: Supports user authentication, real-time collaboration, and cloud-based backup when internet is available.  
-- **Vite + GitHub Actions**: Enables fast builds, modular development, and seamless deployment directly to the Chrome Web Store.  
+- Chrome Extension Runtime**: Ensures smooth integration directly into the browser, allowing intelligent overlay features on platforms like YouTube and web-based learning tools.  
+- Tldraw API: Powers the visual canvas with a flexible, interactive whiteboard for drawing, annotation, and lesson creation—ideal for teachers.  
+- ReactJS + JavaScript (ES6+): Drives a dynamic, responsive user interface across both the canvas and the AI assistant overlay, with reusable components for scalability.  
+- Web APIs (Speech Recognition, IndexedDB, etc.): Enable voice-based interaction, local data storage, and offline availability—crucial for low-connectivity areas.  
+- Tailwind CSS: Provides a clean and consistent UI across components, optimized for both functionality and aesthetic simplicity.  
+- Firebase (Optional Cloud Sync): Supports user authentication, real-time collaboration, and cloud-based backup when internet is available.  
+- Vite + GitHub Actions: Enables fast builds, modular development, and seamless deployment directly to the Chrome Web Store.  
 
 This stack empowers Wizzly to function as a self-contained educational suite that works even in resource-constrained environments, supporting both teachers and students on the same platform.
 
