@@ -2,7 +2,7 @@
 
 Uneven access to quality education remains a major barrier for millions of students worldwide, especially in low-connectivity regions. Traditional digital tools often assume constant internet access, skilled educators, and expensive infrastructure.
 
-**Wizzly bridges this gap with an AI-powered Chrome extension suite designed for both teachers and students, optimized to work offline-first.**
+Wizzly bridges this gap with an AI-powered Chrome extension suite designed for both teachers and students, optimized to work offline-first.
 
 It includes:
 
@@ -25,7 +25,7 @@ These issues widen the digital divide and prevent equitable access to modern, hi
 
 ## 💡 The Solution
 
-**Wizzly directly attacks the root causes of digital educational inequality with a powerful, AI-powered offline-first suite—eliminating the need for costly infrastructure, consistent connectivity, or complex tools. It’s a single, unified platform that gives students autonomy and teachers superpowers, regardless of their environment.**
+Wizzly directly attacks the root causes of digital educational inequality with a powerful, AI-powered offline-first suite—eliminating the need for costly infrastructure, consistent connectivity, or complex tools. It’s a single, unified platform that gives students autonomy and teachers superpowers, regardless of their environment.
 
 - **Offline-First by Design**: All core features—interactive canvas, note-taking, whiteboard, PDF exports, and voice controls—work fully without internet. No logins, no server dependencies.  
 - **AI Doubt Solving, Embedded in YouTube**: Transforms any YouTube tutorial into a smart classroom. Students can pause, ask doubts via chat or voice, and get real-time AI explanations. No additional app. No friction.  
@@ -36,7 +36,7 @@ These issues widen the digital divide and prevent equitable access to modern, hi
 - **Fail-Safe Architecture**: If internet cuts off, Wizzly seamlessly switches to offline-only mode so that learning never stops.  
 - **Built for Low-End Devices**: Lightweight frontend, no backend calls, and full local storage usage make it ideal for low-RAM, low-power systems.  
 
-**Wizzly doesn’t just digitize education—it decentralizes it.** It removes every traditional blocker—connectivity, cost, hardware, and complexity—and delivers a truly inclusive, personalized, and scalable solution aligned with **UN SDG 4: Quality Education**.
+Wizzly doesn’t just digitize education—it decentralizes it.** It removes every traditional blocker—connectivity, cost, hardware, and complexity—and delivers a truly inclusive, personalized, and scalable solution aligned with **UN SDG 4: Quality Education.
 
 ## ✨ Features
 
