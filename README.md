@@ -42,25 +42,25 @@ Wizzly doesn’t just digitize education—it decentralizes it.** It removes eve
 
 ### For Educators
 
-| **Capability**                     | **GIF**             | **Description**                                                                             |
-|-----------------------------------|---------------------|---------------------------------------------------------------------------------------------|
-| **Interactive Digital Canvas**    | drawing-canvas.gif  | A dynamic space for illustrating concepts, diagrams, and collaborative teaching.            |
-| **Smart Note Integration**        | [adding-notes.gif](https://github.com/mynk8/Wizzly/blob/main/Untitled%20video%20-%20Made%20with%20Clipchamp%20(3).gif)    | Seamlessly add structured notes during sessions to enhance lesson delivery.                |
-| **AI-Powered Answer Assistance**  | canvas-ans.gif      | Instantly retrieve accurate answers and insights on the canvas via AI prompts.             |
-| **Conversational AI Chat**        | chat-ai.gif         | Engage in meaningful dialogue with AI to support content creation and queries.             |
-| **Real-Time Voice Interaction**   | voice-ai.gif        | Voice-to-voice conversations with AI to streamline planning and clarification.             |
-| **Exportable Teaching Material**  | print-notes.gif     | Convert live notes and sessions into downloadable PDFs for offline access.                 |
-| **Automated Lesson Plan Generator** | lesson-gen.gif     | Generate detailed, curriculum-aligned lesson plans with AI in seconds.                     |
-| **Embedded Resource Integration** | add-resources.gif   | Easily attach external links, documents, and videos for comprehensive lessons.             |
+| **Capability**                    | **Description**                                                                            |
+|-----------------------------------|-------------------------------------------------------------------------------------------|
+| Interactive Digital Canvas        | A dynamic space for illustrating concepts, diagrams, and collaborative teaching.           |
+| Smart Note Integration            | Seamlessly add structured notes during sessions to enhance lesson delivery.                |
+| AI-Powered Answer Assistance      | Instantly retrieve accurate answers and insights on the canvas via AI prompts.             |
+| Conversational AI Chat            | Engage in meaningful dialogue with AI to support content creation and queries.             |
+| Real-Time Voice Interaction       | Voice-to-voice conversations with AI to streamline planning and clarification.             |
+| Exportable Teaching Material      | Convert live notes and sessions into downloadable PDFs for offline access.                 |
+| Automated Lesson Plan Generator   | Generate detailed, curriculum-aligned lesson plans with AI in seconds.                     |
+| Embedded Resource Integration     | Easily attach external links, documents, and videos for comprehensive lessons.             |
 
 ### For Learners
 
-| **Capability**                     | **GIF**             | **Description**                                                                             |
+| **Capability**                    | **Description**                                                                             |
 |-----------------------------------|---------------------|---------------------------------------------------------------------------------------------|
-| **AI-Driven Learning Companion**  | chat-assist.gif     | Receive real-time explanations and doubt resolution while watching tutorials.              |
-| **Interactive Voice Support**     | voice-talk.gif      | Converse directly with AI to clarify concepts without disrupting learning flow.            |
-| **Personal Note Management**      | student-notes.gif   | Take, organize, and revisit notes alongside videos — tailored for retention.               |
-| **Intelligent Video Control**     | video-control.gif   | Navigate video content using chat or voice commands for a smoother experience.             |
+| AI-Driven Learning Companion  | Receive real-time explanations and doubt resolution while watching tutorials.              |
+| Interactive Voice Support     | Converse directly with AI to clarify concepts without disrupting learning flow.            |
+| Personal Note Management    | Take, organize, and revisit notes alongside videos — tailored for retention.               |
+| Intelligent Video Control     | Navigate video content using chat or voice commands for a smoother experience.             |
 
 ## Technology Stack
 
