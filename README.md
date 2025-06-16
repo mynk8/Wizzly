@@ -45,7 +45,7 @@ These issues widen the digital divide and prevent equitable access to modern, hi
 | **Capability**                     | **GIF**             | **Description**                                                                             |
 |-----------------------------------|---------------------|---------------------------------------------------------------------------------------------|
 | **Interactive Digital Canvas**    | drawing-canvas.gif  | A dynamic space for illustrating concepts, diagrams, and collaborative teaching.            |
-| **Smart Note Integration**        | adding-notes.gif    | Seamlessly add structured notes during sessions to enhance lesson delivery.                |
+| **Smart Note Integration**        | [adding-notes.gif](https://github.com/mynk8/Wizzly/blob/main/Untitled%20video%20-%20Made%20with%20Clipchamp%20(3).gif)    | Seamlessly add structured notes during sessions to enhance lesson delivery.                |
 | **AI-Powered Answer Assistance**  | canvas-ans.gif      | Instantly retrieve accurate answers and insights on the canvas via AI prompts.             |
 | **Conversational AI Chat**        | chat-ai.gif         | Engage in meaningful dialogue with AI to support content creation and queries.             |
 | **Real-Time Voice Interaction**   | voice-ai.gif        | Voice-to-voice conversations with AI to streamline planning and clarification.             |
