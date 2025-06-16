@@ -2,107 +2,100 @@
 
 Uneven access to quality education remains a major barrier for millions of students worldwide, especially in low-connectivity regions. Traditional digital tools often assume constant internet access, skilled educators, and expensive infrastructure.
 
-**Wizzly bridges this gap with an AI-powered Chrome extension suite designed for both teachers and students, optimized to work offline-first.**
+**Wizzly** bridges this gap with an AI-powered Chrome extension suite designed for both **teachers** and **students**, optimized to work **offline-first**.  
 
-It includes:
+---
 
-**Wizzly Canvas** — a visual teaching workspace for educators to plan lessons, embed YouTube videos, generate AI-based objectives, and annotate with full offline support.
+## Overview
 
-**YouTube Assistant Extension** — a lightweight student-facing tool that allows learners to ask doubts, control video playback via chat or voice, and engage in voice-to-voice conversations with an AI assistant — all while watching YouTube tutorials.
+Wizzly includes:
 
-Together, these tools offer a multimodal, low-bandwidth, and inclusive learning experience — tailored for the realities of modern classrooms in underserved regions.
+• **Teaching Canvas** — A visual workspace for educators to plan lessons, embed videos, generate AI content, and annotate—even offline.  
+• **YouTube Assistant** — Helps students ask doubts, control playback with chat or voice, and engage in voice-to-voice conversations while watching any tutorial video.  
+
+Together, these tools offer a **low-bandwidth**, **inclusive**, and **interactive learning experience**—especially for underserved communities.
+
+---
 
 ## The Problem
 
-Millions of students, particularly in underserved regions, face significant barriers to quality education:
+Millions of learners face major challenges accessing quality education:
 
-- **Unreliable or No Internet** – Limited connectivity restricts access to digital learning platforms and AI-powered tools.  
-- **Poor Infrastructure** – Many schools lack basic hardware, stable electricity, or modern devices needed for digital learning.  
-- **Resource Gaps** – Outdated or insufficient textbooks, learning materials, and tools limit effective learning.  
-- **Shortage of Skilled Educators** – A lack of trained teachers or overburdened staff reduces the quality of instruction.  
+• **No or Low Internet** – Blocks access to digital content and learning tools.  
+• **Weak Infrastructure** – Lack of devices, electricity, and modern classrooms.  
+• **Outdated Resources** – Limited textbooks and learning tools restrict modern learning.  
+• **Teacher Shortages** – Few trained educators and overburdened staff.  
 
-These issues widen the digital divide and prevent equitable access to modern, high-quality education.
+These gaps leave students behind and increase educational inequality.
 
-## The Solution
+---
 
-**Wizzly directly attacks the root causes of digital educational inequality with a powerful, AI-powered offline-first suite—eliminating the need for costly infrastructure, consistent connectivity, or complex tools. It’s a single, unified platform that gives students autonomy and teachers superpowers, regardless of their environment.**
+## 💡 The Solution
 
-- **Offline-First by Design**: All core features—interactive canvas, note-taking, whiteboard, PDF exports, and voice controls—work fully without internet. No logins, no server dependencies.  
-- **AI Doubt Solving, Embedded in YouTube**: Transforms any YouTube tutorial into a smart classroom. Students can pause, ask doubts via chat or voice, and get real-time AI explanations. No additional app. No friction.  
-- **One-Stop Teaching Workspace**: Teachers can visually plan lessons, write over embedded videos, save reusable content, and even generate AI-powered objectives—all inside a drag-and-drop whiteboard.  
-- **Voice-First, Inclusive Interaction**: 95%+ accurate voice recognition, multilingual input support, and natural language understanding make it usable for early learners, rural classrooms, or visually impaired users.  
-- **No Setup. No Barriers.**: Install once as a Chrome extension. Works instantly on any device with a browser—no admin permissions, logins, or backend infrastructure needed.  
-- **Real-Time Sync with Video**: Notes, screenshots, and AI responses are auto-synced with YouTube timestamps for frictionless review and retention.  
-- **Fail-Safe Architecture**: If internet cuts off, Wizzly seamlessly switches to offline-only mode so that learning never stops.  
-- **Built for Low-End Devices**: Lightweight frontend, no backend calls, and full local storage usage make it ideal for low-RAM, low-power systems.  
+Wizzly delivers a bold, scalable solution to the challenges of digital education with an **all-in-one AI-powered learning environment** that works with or without internet.
 
-**Wizzly doesn’t just digitize education—it decentralizes it.** It removes every traditional blocker—connectivity, cost, hardware, and complexity—and delivers a truly inclusive, personalized, and scalable solution aligned with **UN SDG 4: Quality Education**.
+- **Offline-First**: Works fully offline—from canvas to AI chat and note export.  
+- **AI Doubt Assistant in YouTube**: Ask questions while watching and get instant answers.  
+- **Educator Suite in One Click**: Plan, draw, chat, and generate notes in one place.  
+- **Voice-Based Learning**: Speak your doubts and learn hands-free with natural conversations.  
+- **Inclusive Design**: Built for students, teachers, and low-end devices—no login, no limits.  
 
-## Features
+---
+
+## ✨ Features
 
 ### For Educators
 
-| **Capability**                     | **GIF**             | **Description**                                                                             |
-|-----------------------------------|---------------------|---------------------------------------------------------------------------------------------|
-| **Interactive Digital Canvas**    | drawing-canvas.gif  | A dynamic space for illustrating concepts, diagrams, and collaborative teaching.            |
-| **Smart Note Integration**        | adding-notes.gif    | Seamlessly add structured notes during sessions to enhance lesson delivery.                |
-| **AI-Powered Answer Assistance**  | canvas-ans.gif      | Instantly retrieve accurate answers and insights on the canvas via AI prompts.             |
-| **Conversational AI Chat**        | chat-ai.gif         | Engage in meaningful dialogue with AI to support content creation and queries.             |
-| **Real-Time Voice Interaction**   | voice-ai.gif        | Voice-to-voice conversations with AI to streamline planning and clarification.             |
-| **Exportable Teaching Material**  | print-notes.gif     | Convert live notes and sessions into downloadable PDFs for offline access.                 |
-| **Automated Lesson Plan Generator** | lesson-gen.gif     | Generate detailed, curriculum-aligned lesson plans with AI in seconds.                     |
-| **Embedded Resource Integration** | add-resources.gif   | Easily attach external links, documents, and videos for comprehensive lessons.             |
+| **Feature**                    | **Demo**             | **What It Does**                                                                        |
+|--------------------------------|----------------------|------------------------------------------------------------------------------------------|
+| Interactive Drawing Canvas     | drawing-canvas.gif   | Visual whiteboard to explain topics interactively.                                       |
+| Smart Note Creation            | adding-notes.gif     | Add teaching points, structure lectures, and annotate freely.                           |
+| AI Answer Integration          | canvas-ans.gif       | Ask questions on canvas and get instant AI-generated help.                              |
+| Conversational AI Chat         | chat-ai.gif          | Chat with AI to explore teaching ideas or explain concepts.                             |
+| Voice-to-Voice Interaction     | voice-ai.gif         | Speak naturally and hear the AI explain responses aloud.                                |
+| Export Notes for Printing      | print-notes.gif      | Turn canvas content into downloadable PDFs.                                              |
+| Lesson Plan Generator          | lesson-gen.gif       | Generate a ready-to-use lesson outline with just a topic input.                         |
+| Attach External Resources      | add-resources.gif    | Link PDFs, articles, or videos to your lessons for rich learning material.              |
 
-### For Learners
+---
 
-| **Capability**                     | **GIF**             | **Description**                                                                             |
-|-----------------------------------|---------------------|---------------------------------------------------------------------------------------------|
-| **AI-Driven Learning Companion**  | chat-assist.gif     | Receive real-time explanations and doubt resolution while watching tutorials.              |
-| **Interactive Voice Support**     | voice-talk.gif      | Converse directly with AI to clarify concepts without disrupting learning flow.            |
-| **Personal Note Management**      | student-notes.gif   | Take, organize, and revisit notes alongside videos — tailored for retention.               |
-| **Intelligent Video Control**     | video-control.gif   | Navigate video content using chat or voice commands for a smoother experience.             |
+### For Students
 
-## Technology Stack
+| **Feature**                    | **Demo**             | **What It Does**                                                                        |
+|--------------------------------|----------------------|------------------------------------------------------------------------------------------|
+| AI Chat During Videos          | chat-assist.gif      | Ask doubts in real-time while watching any YouTube tutorial.                            |
+| Voice-to-Voice AI Chat         | voice-talk.gif       | Talk naturally with AI to clarify concepts instantly.                                   |
+| Take Notes While Watching      | student-notes.gif    | Write and organize notes without switching tabs or tools.                               |
+| Chat-Based Video Control       | video-control.gif    | Pause, play, and control video with chat or voice—no mouse needed.                      |
 
-Wizzly is built using a lightweight, resilient, and browser-native architecture tailored for both online and offline learning environments. The stack emphasizes accessibility, performance, and ease of use—making quality education truly borderless.
+---
 
-- **Chrome Extension Runtime**: Ensures smooth integration directly into the browser, allowing intelligent overlay features on platforms like YouTube and web-based learning tools.  
-- **Tldraw API**: Powers the visual canvas with a flexible, interactive whiteboard for drawing, annotation, and lesson creation—ideal for teachers.  
-- **ReactJS + JavaScript (ES6+)**: Drives a dynamic, responsive user interface across both the canvas and the AI assistant overlay, with reusable components for scalability.  
-- **Web APIs (Speech Recognition, IndexedDB, etc.)**: Enable voice-based interaction, local data storage, and offline availability—crucial for low-connectivity areas.  
-- **Tailwind CSS**: Provides a clean and consistent UI across components, optimized for both functionality and aesthetic simplicity.  
-- **Firebase (Optional Cloud Sync)**: Supports user authentication, real-time collaboration, and cloud-based backup when internet is available.  
-- **Vite + GitHub Actions**: Enables fast builds, modular development, and seamless deployment directly to the Chrome Web Store.  
+## 🧪 Tech Stack
 
-This stack empowers Wizzly to function as a self-contained educational suite that works even in resource-constrained environments, supporting both teachers and students on the same platform.
+Wizzly is crafted with speed, accessibility, and simplicity in mind:
 
-## Get Started
+- **React + TypeScript** – Smooth UI across the extension and canvas  
+- **TLDraw API** – Enables intuitive drawing and lesson building  
+- **Web Speech API** – Real-time voice recognition and voice replies  
+- **IndexedDB & LocalStorage** – Fully offline storage with no login  
+- **Tailwind CSS** – Clean and responsive UI  
+- **Vite** – Performance-optimized extension build system  
 
-Follow these simple steps to begin your journey with **Wizzly**:
+---
 
-### Download the Extension
+## 🚀 Get Started
 
-Go to the **GitHub Releases** section and download the file named:  
-**wizzly-0.1.1.zip**
+1. Download the latest release from GitHub:  
+   **`wizzly-0.1.1.zip`**  
+2. Unzip the folder.  
+3. Go to: `chrome://extensions`  
+4. Turn on **Developer Mode**.  
+5. Click **Load unpacked** and select the extracted folder.
 
-### Install on Chrome
+### Using the Extension:
 
-1. **Unzip** the file.  
-2. Open Chrome and go to:  
-   `chrome://extensions`  
-3. Enable **Developer Mode** (top-right).  
-4. Click **"Load unpacked"** and select the unzipped `wizzly-0.1.1` folder.
+• **YouTube Assistant**: Go to any YouTube video (`youtube.com/watch?...`)  
+• **Teaching Canvas**: Click the Wizzly icon → "Open Teaching Canvas"
 
-### Using the YouTube Assistant
+> ⚠️ Please ensure your browser is in **light mode** for full compatibility.
 
-- Navigate to any YouTube video (youtube.com/watch).  
-- Wizzly's AI Assistant overlay will automatically activate, allowing you to ask doubts, control the video, and more.
-
-### Using the Teaching Canvas
-
-- Click on the **Wizzly extension icon** in the Chrome toolbar.  
-- Select **“Open Teaching Canvas”** to launch the interactive space for note creation, lesson planning, and real-time teaching tools.
-
-<div style="background: #fffbe6; padding: 1em; border-left: 4px solid #facc15; font-weight: 600;">
-⚠️ Please make sure your browser is in <strong>light mode</strong> for full extension compatibility and proper rendering of interface elements.
-</div>
